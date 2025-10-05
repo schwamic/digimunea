@@ -27,7 +27,11 @@ const content = {
         {
             title: 'Benennung der verantwortlichen Stelle',
             description: [
-                [{ text: 'Die verantwortliche Stelle für die Datenverarbeitung auf dieser Webseite ist: Michael Schwarz.' }],
+                [
+                    {
+                        text: 'Die verantwortliche Stelle für die Datenverarbeitung auf dieser Webseite ist: Michael Schwarz.',
+                    },
+                ],
                 [
                     {
                         text: 'Die verantwortliche Stelle entscheidet allein oder gemeinsam mit Anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, Kontaktdaten o. Ä.).',

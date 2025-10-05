@@ -14,15 +14,17 @@ export default function LegalNotice() {
                                 // @ts-expect-error literal object types
                                 <Text className="text-md" content={fragments} key={jdx} />
                             ))}
-                        {items.items && items.items.map((subitems, kdx) => (
-                            <div key={kdx} className="mt-8">
-                                <h3 className="mb-4 text-xl">{subitems.title}</h3>
-                                {subitems.description && subitems.description.map((fragments, ddx) => (
-                                    // @ts-expect-error literal object types
-                                    <Text className="text-md" content={fragments} key={ddx} />
-                                ))}
-                            </div>
-                        ))}
+                        {items.items &&
+                            items.items.map((subitems, kdx) => (
+                                <div key={kdx} className="mt-8">
+                                    <h3 className="mb-4 text-xl">{subitems.title}</h3>
+                                    {subitems.description &&
+                                        subitems.description.map((fragments, ddx) => (
+                                            // @ts-expect-error literal object types
+                                            <Text className="text-md" content={fragments} key={ddx} />
+                                        ))}
+                                </div>
+                            ))}
                     </section>
                 ))}
             </main>
@@ -32,9 +34,7 @@ export default function LegalNotice() {
 
 const content = {
     title: 'impressum',
-    contact: [
-
-    ],
+    contact: [],
     items: [
         {
             title: 'Angaben gemäß § 5 TMG',
@@ -42,14 +42,11 @@ const content = {
                 [{ text: 'Michael Schwarz' }],
                 [{ text: 'Schertlinstraße 10' }],
                 [{ text: '86159 Augsburg' }],
-            ], 
+            ],
             items: [
                 {
                     title: 'Kontakt',
-                    description: [
-                        [{ text: 'T: (+49) 179 422 53 70' }],
-                        [{ text: 'M: schwarz.michael@posteo.net' }],
-                    ],
+                    description: [[{ text: 'T: (+49) 179 422 53 70' }], [{ text: 'M: schwarz.michael@posteo.net' }]],
                 },
                 {
                     title: 'Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV',
@@ -59,7 +56,7 @@ const content = {
                         [{ text: '86159 Augsburg' }],
                     ],
                 },
-            ]
+            ],
         },
         {
             title: 'EU-Streitschlichtung',
@@ -69,7 +66,8 @@ const content = {
                         text: `Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: `,
                     },
                     {
-                        text: `https://ec.europa.eu/consumers/odr`, link: "https://ec.europa.eu/consumers/odr",
+                        text: `https://ec.europa.eu/consumers/odr`,
+                        link: 'https://ec.europa.eu/consumers/odr',
                     },
                     {
                         text: `. Unsere E-Mail-Adresse finden Sie oben im Impressum.`,
