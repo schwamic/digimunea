@@ -16,7 +16,7 @@ export default function Home() {
             <main>
                 <section className="mt-16">
                     {content.intro.map((fragments, idx) => (
-                        // @ts-ignore
+                        // @ts-expect-error literal object types
                         <Text key={idx} className="mb-6 text-lg" content={fragments} />
                     ))}
                 </section>
@@ -27,7 +27,7 @@ export default function Home() {
                         ))}
                         <Card className="box-border inline-flex items-center w-full">
                             <PixelBoxIcon width={75} height={75} className="ml-2 mr-6" />
-                            {/* @ts-ignore */}
+                            {/* @ts-expect-error literal object types */}
                             <Text className="font-sans-monolike text-lg-monolike" content={content.references} />
                         </Card>
                     </div>
