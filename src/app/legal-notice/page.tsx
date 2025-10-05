@@ -1,17 +1,14 @@
-import Header from "@/app/_components/Header"
+import Header from '@/app/_components/Header';
 
 export default function LegalNotice() {
     return (
-      <>
-      <Header title={content.title} />
-      <main>
-        Impressum works!
-      </main>
-      </>
-    )
-  }
+        <>
+            <Header title={content.title} />
+            <main>Impressum works!</main>
+        </>
+    );
+}
 
-  const content = {
-    title: "impressum",
-  }
-  
+const content = {
+    title: 'impressum',
+};

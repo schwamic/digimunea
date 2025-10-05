@@ -1,38 +1,40 @@
-'use client'
+'use client';
 
-import Link from "next/link";
-import { usePathname } from 'next/navigation'
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
-    const pathname = usePathname()
-    
+    const pathname = usePathname();
+
     return (
         <footer className="flex justify-center space-x-6 text-sm">
-            {urls.map((url) => (
-                url.href !== pathname && (
-             <Link key={url.href} href={url.href} className="underline">
-                {url.label}
-             </Link>
-            )))}
+            {urls.map(
+                (url) =>
+                    url.href !== pathname && (
+                        <Link key={url.href} href={url.href} className="underline">
+                            {url.label}
+                        </Link>
+                    ),
+            )}
         </footer>
     );
 }
 
 const urls = [
     {
-        href: "/",
-        label: "Startseite"
+        href: '/',
+        label: 'Startseite',
     },
     {
-        href: "/references",
-        label: "Referenzen"
+        href: '/references',
+        label: 'Referenzen',
     },
     {
-        href: "/legal-notice",
-        label: "Impressum"
+        href: '/legal-notice',
+        label: 'Impressum',
     },
     {
-        href: "/privacy-policy",
-        label: "Datenschutz"
+        href: '/privacy-policy',
+        label: 'Datenschutz',
     },
-]
+];

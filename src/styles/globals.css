@@ -1,66 +1,65 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #0F0F0F;
-  --foreground: #EBE4DD;
+    --background: #0f0f0f;
+    --foreground: #ebe4dd;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans);
-  --font-mono: var(--font-noto-sans-mono);
-  --font-header: var(--font-jersey-15);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-noto-sans);
+    --font-mono: var(--font-noto-sans-mono);
+    --font-header: var(--font-jersey-15);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0F0F0F;
-    --foreground: #EBE4DD;
-  }
+    :root {
+        --background: #0f0f0f;
+        --foreground: #ebe4dd;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
 }
-
 
 /* Utility Classes */
 
 .font-sans-monolike {
-  font-family: var(--font-sans);
-  letter-spacing: 0.02rem;
-  word-spacing: 0.2rem;
+    font-family: var(--font-sans);
+    letter-spacing: 0.02rem;
+    word-spacing: 0.2rem;
 }
 
 .text-2xl-monolike {
-  font-size: 1.55rem;
+    font-size: 1.55rem;
 }
 
 .text-lg-monolike {
-  font-size: 1.15rem;
+    font-size: 1.15rem;
 }
 
 /* Shape Classes */
 
 .triangle {
-  width: 43px;
-  aspect-ratio: 1/cos(30deg);
-  clip-path: polygon(50% 0,100% 100%,0 100%);
-  background: var(--color-foreground);
+    width: 43px;
+    aspect-ratio: 1 / cos(30deg);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: var(--color-foreground);
 }
 
 .square {
-  width: 35px;
-  aspect-ratio: 1;
-  background: var(--color-foreground);
+    width: 35px;
+    aspect-ratio: 1;
+    background: var(--color-foreground);
 }
 
 .circle {
-  width: 40px;
-  aspect-ratio: 1;
-  border-radius: 100%;
-  background: var(--color-foreground);
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    background: var(--color-foreground);
 }
