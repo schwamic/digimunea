@@ -26,8 +26,27 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
+/* Utility Classes */
+
+.font-sans-monolike {
+  font-family: var(--font-sans);
+  letter-spacing: 0.02rem;
+  word-spacing: 0.2rem;
+}
+
+.text-2xl-monolike {
+  font-size: 1.55rem;
+}
+
+.text-lg-monolike {
+  font-size: 1.15rem;
+}
+
+/* Shape Classes */
+
 .triangle {
-  width: 45px;
+  width: 43px;
   aspect-ratio: 1/cos(30deg);
   clip-path: polygon(50% 0,100% 100%,0 100%);
   background: var(--color-foreground);

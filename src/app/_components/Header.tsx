@@ -1,4 +1,4 @@
-export default function Header({title, subtitle, size = 'small', }: HeaderProps) {
+export default function Header({title, subtitle, size = 'small' }: HeaderProps) {
     return (
         <header className="flex flex-col items-center space-y-4">
             <h1 className={`font-header ${size === 'large' ? 'text-8xl' : 'text-6xl'}`}>{title}</h1>
@@ -7,8 +7,8 @@ export default function Header({title, subtitle, size = 'small', }: HeaderProps)
     )
 }
 
-interface HeaderProps {
-    title: string,
-    subtitle?: {text: string}[],
-    size?: 'small' | 'large',
-}
+type HeaderProps = Readonly<{
+    title: string;
+    subtitle?: {text: string}[];
+    size?: 'small' | 'large';
+}> & React.HTMLAttributes<HTMLElement>

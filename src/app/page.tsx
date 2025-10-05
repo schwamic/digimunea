@@ -1,12 +1,11 @@
 'use client'
 
-import Link from "next/link";
-import Image from "next/image";
 import {useTextAnimation} from "@/app/_hooks/useTextAnimation";
 import Header from "@/app/_components/Header";
-import ExternalLink from "@/app/_components/ExternalLink";
 import ServiceCard from "@/app/_components/ServiceCard";
-import PixelBox from "@/app/_assets/PixelBox";
+import Text from "@/app/_components/Text";
+import Card from "@/app/_components/Card";
+import PixelBoxIcon from "@/app/_assets/PixelBoxIcon";
 
 export default function Home() {
   const title = useTextAnimation(content.header.frames)
@@ -15,29 +14,24 @@ export default function Home() {
     <>
       <Header title={title} subtitle={content.header.subtitle} size="large" />
       <main>
+        {/* Intro Section */}
         <section className="mt-16">
-          {content.intro.map((items, idx) => (
-            <p key={idx} className="mb-6 text-lg">
-              {items.map((item, idx) => item.link ? (
-                <ExternalLink key={idx} link={item.link} text={item.text}/>
-              ) : (
-                <span key={idx} className={item.color ?? ""}>{item.text}</span>
-              ))} 
-            </p>
+          {content.intro.map((fragments, idx) => (
+            // @ts-ignore
+            <Text key={idx} className="mb-6 text-lg" content={fragments} />
           ))}
         </section>
+        {/* Services Section */}
         <section className="mt-12 mb-24 -mx-24">
           <div className="columns-2 gap-4 space-y-4">
               {content.services.map((service, idx) => (
                 <ServiceCard key={idx} {...service} />
               ))}
-              <div className="box-border inline-flex items-center w-full p-6 rounded-3xl bg-black">
-                <PixelBox width={65} height={65} className="ml-2 mr-6"/>
-                <p className="text-lg">
-                  <span>Hier eine Auswahl an </span>
-                  <Link href="/references" className="underline">Referenzprojekten</Link>.
-                </p>
-              </div>
+              <Card className="box-border inline-flex items-center w-full">
+                <PixelBoxIcon width={75} height={75} className="ml-2 mr-6"/>
+                {/* @ts-ignore */}
+                <Text className="font-sans-monolike text-lg-monolike" content={content.references} />
+              </Card>
           </div>
         </section>
       </main>
@@ -83,15 +77,15 @@ const content = {
   services: [
     {
       title: "Wissenschaftliche Mitarbeit",
-      description: "Praktische Handreichungen, politische  Paper und Fachartikel zu aktuellen Themen wie Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source. ",
-      style: "sans",
-      symbol: "circle"
+      description: "Praktische Handreichungen, politische  Paper und Fachartikel zu aktuellen Themen wie Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert. ",
+      style: "sans" as const,
+      symbol: "circle" as const 
     },
     {
       title: "Datenverarbeitung",
       description: "Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Data-Cleaning, Visualisierung, Analyse, Machine Learning, Regression und Klassifizierung. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular einzubetten.",
-      style: "mono",
-      symbol: "square"
+      style: "mono" as const,
+      symbol: "square" as const
     },
     {
       title: "Softwareentwicklung",
@@ -100,13 +94,13 @@ const content = {
         "TypeScript und Python zur Fullstack-/Cross-Plattform-Entwicklung und (Teil-) Automatisierung",
         "Containerbasiertes Hosting für kleine bis mittlere Projekte (z.B. Hetzner VPS)",
       ],
-      style: "mono",
-      symbol: "triangle"
+      style: "mono" as const,
+      symbol: "triangle" as const
     },
   ],
   references: [
     {text: "Hier eine Auswahl an "},
-    {text: "Referenzen", link: "/references"},
-    {text: " ."},
+    {text: "Referenzprojekten", route: "/references"},
+    {text: "."},
   ]
 }

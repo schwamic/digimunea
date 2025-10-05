@@ -9,8 +9,7 @@ export default function ExternalLink({text, link}: ExternalLinkProps) {
     )
 }
 
-interface ExternalLinkProps {
+type ExternalLinkProps = Readonly<{
     text: string;
     link: string;
-    key?: number;
-}
+}> & React.HTMLAttributes<HTMLAnchorElement>
