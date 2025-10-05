@@ -20,13 +20,13 @@ export default function Home() {
                         <Text key={idx} className="mb-6 text-lg" content={fragments} />
                     ))}
                 </section>
-                <section className="mt-12 mb-24 md:-mx-24 lg:-mx-32">
+                <section className="mt-12 md:-mx-24 lg:-mx-32">
                     <div className="md:columns-2 gap-4 space-y-4">
                         {content.services.map((service, idx) => (
                             <ServiceCard key={idx} {...service} />
                         ))}
                         <Card className="box-border inline-flex items-center w-full">
-                            <PixelBoxIcon width={75} height={75} className="ml-2 mr-6" />
+                            <PixelBoxIcon className="ml-2 mr-6" width={45} height={45} />
                             {/* @ts-expect-error literal object types */}
                             <Text className="font-sans-monolike text-lg-monolike" content={content.references} />
                         </Card>
@@ -48,9 +48,7 @@ const content = {
                 text: 'Ich bin Softwareentwickler und Researcher. Aktuell arbeite ich als Open Source Developer & Analyst bei ',
             },
             { text: 'neuland21 e.V.', link: 'https://neuland21.de' },
-            { text: ' und nebenberuflich als Freelancer' },
-            { text: ' (regulärer Stundensatz 74€ Brutto)', color: 'text-stone-400' },
-            { text: '.' },
+            { text: ' und nebenberuflich als Freelancer.' },
         ],
         [
             { text: 'Ich freue mich immer über Austausch und Vernetzung – z.B. via ' },
@@ -59,7 +57,7 @@ const content = {
             { text: 'E-Mail', link: 'mailto:schwarz.michael@posteo.net' },
             { text: '. #gernperDu' },
         ],
-        [{ text: 'Meine Leistungen im Überblick:' }],
+        [{ text: 'Meine Leistungen im Überblick: ' }, { text: '(74€/h brutto)', styles: 'text-stone-400' }],
     ],
     services: [
         {

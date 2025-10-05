@@ -1,6 +1,6 @@
 export default function PixelBoxIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={{ flexShrink: 0 }} {...props}>
             <g fill="currentColor">
                 <path
                     d="m22.86 4.574999999999999 -1.14 0 0 1.14 -1.1475 0 0 1.1475 1.1475 0 0 1.14 1.14 0 0 -1.14 1.14 0 0 -1.1475 -1.14 0 0 -1.14z"

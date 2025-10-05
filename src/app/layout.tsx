@@ -36,7 +36,7 @@ export default function RootLayout({
             >
                 <div className="font-sans mt-16 mb-12 max-w-xl px-4 m-auto">
                     {children}
-                    <Footer />
+                    <Footer className="mt-28" />
                 </div>
             </body>
         </html>

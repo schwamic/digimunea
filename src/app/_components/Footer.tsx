@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export default function Footer() {
+export default function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
     const pathname = usePathname();
 
     return (
-        <footer className="flex justify-center space-x-6 text-sm">
+        <footer className={`${className} flex justify-center space-x-6 text-sm`}>
             {urls.map(
                 (url) =>
                     url.href !== pathname && (
