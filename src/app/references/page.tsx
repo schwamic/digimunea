@@ -90,7 +90,7 @@ const content = {
             company: [{ text: '2025 | ' }, { text: 'TH Augsburg', link: 'https://tha.de' }],
             description: [
                 { text: 'STANDORT', link: 'https://www.springerprofessional.de/standort/5054282' },
-                { text: '-Submission zu KI-Methoden in der Stadtentwicklung' },
+                { text: '-Submission zu „KI-Methoden in der Stadtentwicklung“' },
             ],
         },
         {
@@ -172,8 +172,8 @@ const content = {
             description: [
                 { text: 'Konzeption und technische Umsetzung der IoT-Projekte ' },
                 {
-                    text: 'Witty-Analytic Connect',
-                    link: 'https://www.witty.eu/gesamtloesungen/schwimmbad/technische-anlagen-wasseraufbereitung/witty-analytic-connect',
+                    text: 'Witty Schwimmbad-Assistent',
+                    link: 'https://www.witty.eu/digitale-apps/mein.schwimmbad/',
                 },
                 { text: ' und ' },
                 {
