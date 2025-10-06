@@ -155,7 +155,8 @@ const content = {
             company: [{ text: '2021 | Co-Founder' }],
             description: [
                 {
-                    text: 'Nusszopf – Netzwerk für gemeinsame Ideen und Projekte', link: 'https://www.nachhaltigkeit.augsburg.de/zukunftspreis/projektdetails/nusszopf-netzwerk-fuer-gemeinsame-ideen-und-projekte',
+                    text: 'Nusszopf – Netzwerk für gemeinsame Ideen und Projekte',
+                    link: 'https://www.nachhaltigkeit.augsburg.de/zukunftspreis/projektdetails/nusszopf-netzwerk-fuer-gemeinsame-ideen-und-projekte',
                 },
                 {
                     text: ' (Preisträger:in Zukunftspreis 2021 der Stadt Augsburg)',
