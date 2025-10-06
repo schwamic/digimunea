@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
 }
 
 const content = {
-    title: 'datenschutzerklärung',
+    title: 'datenschutz',
     items: [
         {
             title: 'Benennung der verantwortlichen Stelle',

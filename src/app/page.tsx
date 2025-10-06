@@ -62,24 +62,34 @@ const content = {
     services: [
         {
             title: 'Wissenschaftliche Mitarbeit',
-            description:
-                'Praktische Handreichungen, politische  Paper und Fachartikel zu aktuellen Themen wie Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert. ',
+            description: [
+                {
+                    text: 'Praktische Handreichungen, politische  Paper und Fachartikel zu aktuellen Themen wie Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert.',
+                },
+            ],
             style: 'sans' as const,
             symbol: 'circle' as const,
         },
         {
             title: 'Datenverarbeitung',
-            description:
-                'Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Data-Cleaning, Visualisierung, Analyse, Machine Learning, Regression und Klassifizierung. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular einzubetten.',
+            description: [
+                {
+                    text: 'Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Data-Cleaning, Visualisierung, Analyse, Machine Learning, Regression und Klassifizierung. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular einzubetten.',
+                },
+            ],
             style: 'mono' as const,
             symbol: 'square' as const,
         },
         {
             title: 'Softwareentwicklung',
             description: [
-                'Von Beratung und Workshops bis Prototyping und Mitarbeit',
-                'TypeScript und Python zur Fullstack-/Cross-Plattform-Entwicklung und (Teil-) Automatisierung',
-                'Containerbasiertes Hosting für kleine bis mittlere Projekte (z.B. Hetzner VPS)',
+                {
+                    list: [
+                        'Von Beratung und Workshops bis Prototyping und Mitarbeit',
+                        'TypeScript und Python zur Fullstack-/Cross-Plattform-Entwicklung und (Teil-) Automatisierung',
+                        'Containerbasiertes Hosting für kleine bis mittlere Projekte (z.B. Hetzner VPS)',
+                    ],
+                },
             ],
             style: 'mono' as const,
             symbol: 'triangle' as const,
