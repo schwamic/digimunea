@@ -82,7 +82,7 @@ const content = {
             company: [{ text: '2025 | ' }, { text: 'neuland21 e.V.', link: 'https://neuland21.de' }],
             description: [
                 { text: 'REINVENT', link: 'https://neuland21.de/projekte/reinvent' },
-                { text: ' – Inventur und Recherche zu Förder- und Modellprojekten' },
+                { text: ' – Inventur und Recherche zu Open-Source Förder- und Modellprojekten' },
             ],
         },
         {
