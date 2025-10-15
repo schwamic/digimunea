@@ -55,9 +55,9 @@ const content = {
             { text: 'LinkedIn', link: 'https://www.linkedin.com/in/schwamic' },
             { text: ' oder direkt per ' },
             { text: 'E-Mail', link: 'mailto:schwarz.michael@posteo.net' },
-            { text: '. #gernperDu' },
+            { text: '. #gernperDu', styles: 'italic' },
         ],
-        [{ text: 'Meine Leistungen im Überblick: ' }, { text: '(74€/h brutto)', styles: 'text-stone-400' }],
+        [{ text: 'Meine Leistungen im Überblick: ' }], //, { text: '(74€/h brutto)', styles: 'text-stone-400' }],
     ],
     services: [
         {
