@@ -22,19 +22,19 @@ export default function Footer({ className }: React.HTMLAttributes<HTMLElement>)
 
 const urls = [
     {
-        href: '/',
+        href: '/home',
         label: 'Startseite',
     },
     {
-        href: '/references',
+        href: '/home/references',
         label: 'Referenzen',
     },
     {
-        href: '/legal-notice',
+        href: '/home/legal-notice',
         label: 'Impressum',
     },
     {
-        href: '/privacy-policy',
+        href: '/home/privacy-policy',
         label: 'Datenschutz',
     },
 ];

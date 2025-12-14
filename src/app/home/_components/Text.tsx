@@ -1,6 +1,6 @@
-import ExternalLink from '@/app/_components/ExternalLink';
+import ExternalLink from '@/app/home/_components/ExternalLink';
 import Link from 'next/link';
-import List from '@/app/_components/List';
+import List from '@/app/home/_components/List';
 import { useMemo } from 'react';
 
 export default function Text({ content, className }: TextProps) {

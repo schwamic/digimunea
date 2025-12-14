@@ -1,13 +1,13 @@
 'use client';
 
-import { useTextAnimation } from '@/app/_hooks/useTextAnimation';
-import Header from '@/app/_components/Header';
-import ServiceCard from '@/app/_components/ServiceCard';
-import Text from '@/app/_components/Text';
-import Card from '@/app/_components/Card';
+import { useTextAnimation } from '@/app/home/_hooks/useTextAnimation';
+import Header from '@/app/home/_components/Header';
+import ServiceCard from '@/app/home/_components/ServiceCard';
+import Text from '@/app/home/_components/Text';
+import Card from '@/app/home/_components/Card';
 import PixelBoxIcon from '@/app/_assets/PixelBoxIcon';
 
-export default function Home() {
+export default function Main() {
     const title = useTextAnimation(content.header.frames);
 
     return (
@@ -95,5 +95,5 @@ const content = {
             symbol: 'triangle' as const,
         },
     ],
-    references: [{ text: 'Hier eine Auswahl an ' }, { text: 'Referenzprojekten', route: '/references' }, { text: '.' }],
+    references: [{ text: 'Hier eine Auswahl an ' }, { text: 'Referenzprojekten', route: '/home/references' }, { text: '.' }],
 };

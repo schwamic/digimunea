@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import Card from '@/app/_components/Card';
-import Text from '@/app/_components/Text';
+import Card from '@/app/home/_components/Card';
+import Text from '@/app/home/_components/Text';
 
 export default function ServiceCard({ title, description, symbol, style }: ServiceCardProps) {
     const isMono = useMemo(() => style === 'mono', [style]);

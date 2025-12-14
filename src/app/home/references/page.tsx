@@ -1,8 +1,8 @@
 'use client';
 
-import { useTextAnimation } from '@/app/_hooks/useTextAnimation';
-import Header from '@/app/_components/Header';
-import Text from '@/app/_components/Text';
+import { useTextAnimation } from '@/app/home/_hooks/useTextAnimation';
+import Header from '@/app/home/_components/Header';
+import Text from '@/app/home/_components/Text';
 
 export default function References() {
     const title = useTextAnimation(content.header.frames);

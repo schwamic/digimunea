@@ -1,5 +1,5 @@
-import Header from '@/app/_components/Header';
-import Text from '@/app/_components/Text';
+import Header from '@/app/home/_components/Header';
+import Text from '@/app/home/_components/Text';
 
 export default function LegalNotice() {
     return (
