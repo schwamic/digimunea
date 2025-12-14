@@ -95,9 +95,5 @@ const content = {
             symbol: 'triangle' as const,
         },
     ],
-    references: [
-        { text: 'Hier eine Auswahl an ' },
-        { text: 'Referenzprojekten', route: '/home/references' },
-        { text: '.' },
-    ],
+    references: [{ text: 'Hier eine Auswahl an ' }, { text: 'Referenzprojekten', route: '/references' }, { text: '.' }],
 };

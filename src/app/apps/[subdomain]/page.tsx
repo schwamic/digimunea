@@ -1,24 +1,16 @@
-import { notFound } from 'next/navigation';
-
-interface Props {
-    params: { subdomain: string };
-}
-
-export default async function SubdomainPage({ params }: Props) {
+export default async function SubdomainPage({ params }: SubdomainPageProps) {
     const { subdomain } = await params;
     const apps: Record<string, { name: string }> = {
-        push: { name: 'Push Notifications App' },
+        notifications: { name: 'Push Notifications App' },
     };
 
-    const workspace = apps[subdomain] || null;
-
-    if (!workspace) {
-        return notFound();
-    }
-
     return (
-        <main className="flex justify-center">
-            <h1 className="font-mono text-2xl font-bold">Welcome to {workspace.name}</h1>
-        </main>
+        <div className="flex justify-center">
+            <h1 className="font-mono text-2xl font-bold">Welcome to {apps[subdomain]?.name}</h1>
+        </div>
     );
 }
+
+type SubdomainPageProps = {
+    params: { subdomain: string };
+};
