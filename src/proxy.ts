@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-    const url = request.nextUrl;
-    let hostname = request.headers.get('host') || '';
+    const hostname = request.headers.get('host') || '';
     const rootDomain = 'digimunea.de';
     const isLocalhost = hostname?.includes('localhost');
     let subdomain = '';
