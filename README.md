@@ -21,10 +21,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Prisma
 
 1. Define database schema
-Open the schema.prisma file and define your first models. Check the docs if you need inspiration: `https://pris.ly/ppg-init`.
+   Open the schema.prisma file and define your first models. Check the docs if you need inspiration: `https://pris.ly/ppg-init`.
 
 2. Apply migrations
-Run the following command to create and apply a migration: `npx prisma migrate dev --name init`
+   Run the following command to create and apply a migration: `npx prisma migrate dev --name init`
 
 3. Manage data
-View and edit your data locally by running this command: `npx prisma studio`
+   View and edit your data locally by running this command: `npx prisma studio`

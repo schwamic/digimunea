@@ -1,15 +1,15 @@
-import {notFound} from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 interface Props {
     params: { subdomain: string };
 }
 
-export default async function SubdomainPage({params}: Props) {
+export default async function SubdomainPage({ params }: Props) {
     const { subdomain } = await params;
     const apps: Record<string, { name: string }> = {
-        "push": { name: 'Push Notifications App' },
+        push: { name: 'Push Notifications App' },
     };
- 
+
     const workspace = apps[subdomain] || null;
 
     if (!workspace) {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Noto_Sans_Mono, Noto_Sans, Jersey_15 } from 'next/font/google';
 import '@/styles/globals.css';
- 
+
 const notoSans = Noto_Sans({
     variable: '--font-noto-sans',
     subsets: ['latin'],
@@ -33,9 +33,7 @@ export default function RootLayout({
             <body
                 className={`${notoSans.variable} ${notoSansMono.variable} ${jersey15.variable} selection:bg-amber-600 antialiased`}
             >
-                <div className="font-sans mt-16 mb-12 max-w-xl px-4 m-auto">
-                    {children}
-                </div>
+                <div className="font-sans mt-16 mb-12 max-w-xl px-4 m-auto">{children}</div>
             </body>
         </html>
     );
