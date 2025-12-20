@@ -167,6 +167,7 @@ class NotificationService {
                 process.env.VAPID_PRIVATE_KEY!,
             );
             await Promise.allSettled(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 channel.users.map(({ user }) =>
                     webpush.sendNotification(
                         user.subscription as Subscription,
