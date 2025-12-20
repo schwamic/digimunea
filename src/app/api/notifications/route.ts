@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 import * as z from 'zod';
 import prisma from '@src/lib/server/prisma';
+import { User } from '@prisma/client';
 
 export async function PUT(request: NextRequest) {
     const data: NewUser | UpdateUser = await request.json();
@@ -167,8 +168,7 @@ class NotificationService {
                 process.env.VAPID_PRIVATE_KEY!,
             );
             await Promise.allSettled(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                channel.users.map(({ user }) =>
+                channel.users.map(({ user }: ChannelUser) =>
                     webpush.sendNotification(
                         user.subscription as Subscription,
                         JSON.stringify({
@@ -218,3 +218,6 @@ export type Subscription = z.infer<typeof Subscription>;
 export type Message = z.infer<typeof Message>;
 export type NewUser = z.infer<typeof NewUser>;
 export type UpdateUser = z.infer<typeof UpdateUser>;
+type ChannelUser = {
+  user: User
+}
