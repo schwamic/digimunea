@@ -1,5 +1,5 @@
-import Header from '@/app/home/_components/Header';
-import Text from '@/app/home/_components/Text';
+import Header from '@src/app/home/_components/Header';
+import Text from '@src/app/home/_components/Text';
 
 export default function PrivacyPolicy() {
     return (

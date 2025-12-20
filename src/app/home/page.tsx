@@ -1,11 +1,11 @@
 'use client';
 
-import { useTextAnimation } from '@/app/home/_hooks/useTextAnimation';
-import Header from '@/app/home/_components/Header';
-import ServiceCard from '@/app/home/_components/ServiceCard';
-import Text from '@/app/home/_components/Text';
-import Card from '@/app/home/_components/Card';
-import PixelBoxIcon from '@/app/_assets/PixelBoxIcon';
+import { useTextAnimation } from '@src/app/home/_hooks/useTextAnimation';
+import Header from '@src/app/home/_components/Header';
+import ServiceCard from '@src/app/home/_components/ServiceCard';
+import Text from '@src/app/home/_components/Text';
+import Card from '@src/app/home/_components/Card';
+import PixelBoxIcon from '@src/app/_assets/PixelBoxIcon';
 
 export default function Main() {
     const title = useTextAnimation(content.header.frames);

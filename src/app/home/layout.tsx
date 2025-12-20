@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Footer from '@/app/home/_components/Footer';
+import Footer from '@src/app/home/_components/Footer';
 
 export const metadata: Metadata = {
     title: 'digimunea – Michael Schwarz M.Sc.',

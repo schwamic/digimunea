@@ -7,7 +7,7 @@ export default function Custom404() {
     const router = useRouter();
 
     useEffect(() => {
-        router.replace('/');
+        router.replace('https://digimunea.de');
     }, [router]);
 
     return null;

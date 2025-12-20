@@ -10,7 +10,12 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-    ...compat.extends('next/core-web-vitals', 'next/typescript', 'plugin:prettier/recommended'),
+    ...compat.extends(
+        'next/core-web-vitals',
+        'next/typescript',
+        'plugin:@tanstack/query/recommended',
+        'plugin:prettier/recommended',
+    ),
     ...compat.config({ extends: ['next', 'prettier'] }),
     {
         ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],

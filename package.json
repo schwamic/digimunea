@@ -16,26 +16,31 @@
     "dependencies": {
         "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.1.0",
+        "@tanstack/react-query": "^5.90.12",
         "dotenv": "^17.2.3",
         "lucide-react": "^0.544.0",
         "next": "^15.5.9",
         "pg": "^8.16.3",
         "react": "19.1.0",
         "react-dom": "19.1.0",
+        "web-push": "^3.6.7",
         "zod": "^4.1.13"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
         "@tailwindcss/postcss": "^4",
+        "@tanstack/eslint-plugin-query": "^5.91.2",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "@types/web-push": "^3.6.4",
         "eslint": "^9",
         "eslint-config-next": "15.5.4",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.4",
         "prisma": "^7.1.0",
         "tailwindcss": "^4",
+        "tsx": "^4.21.0",
         "typescript": "^5"
     }
 }
