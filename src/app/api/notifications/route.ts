@@ -218,6 +218,4 @@ export type Subscription = z.infer<typeof Subscription>;
 export type Message = z.infer<typeof Message>;
 export type NewUser = z.infer<typeof NewUser>;
 export type UpdateUser = z.infer<typeof UpdateUser>;
-type ChannelUser = {
-  user: User
-}
+type ChannelUser = { user: User };
