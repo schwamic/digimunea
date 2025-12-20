@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 import * as z from 'zod';
 import prisma from '@src/lib/server/prisma';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 export async function PUT(request: NextRequest) {
     const data: NewUser | UpdateUser = await request.json();
