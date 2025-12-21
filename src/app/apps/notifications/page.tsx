@@ -41,14 +41,16 @@ function PushNotificationManager() {
     }, []);
 
     async function initPushNotifications() {
-        console.log('Push Notification supported:', isSupported);
-        console.log('Notification permission:', isGranted);
-        if (isGranted === 'default') {
-            const permission = await Notification.requestPermission();
+        let permission = isGranted;
+        if (permission === 'default') {
+            permission = await Notification.requestPermission();
             setIsGranted(permission);
         }
-        if (isGranted !== 'granted' || !isSupported) {
-            console.log('Push notifications not granted or supported.');
+        if (permission !== 'granted' || !isSupported) {
+            console.log(
+                'Push notifications not granted or supported:',
+                `{isSupported: ${isSupported}, isGranted: ${permission}}`,
+            );
             return;
         }
         const registration = await navigator.serviceWorker.register('/sw.js', {
