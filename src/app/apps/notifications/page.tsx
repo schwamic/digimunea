@@ -20,44 +20,67 @@ function urlBase64ToUint8Array(base64String: string) {
 
 function PushNotificationManager() {
     const { useUser, createUser, removeUser, sendMessage } = useApi();
-    const [userId, setUserId] = useState<string | null>(() => {
-        if (typeof window !== 'undefined') {
-            const storedUserId = localStorage.getItem('userId');
-            return storedUserId ? storedUserId : null;
-        }
-        return null;
-    });
+    const [userId, setUserId] = useState<string | null>(null);
     const { data: user, isLoading, error } = useUser(userId);
     const [isSupported, setIsSupported] = useState(false);
+    const [isGranted, setIsGranted] = useState<NotificationPermission>('default');
     const [message, setMessage] = useState('');
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [channel, setChannel] = useState('');
 
     useEffect(() => {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            setIsSupported(true);
+        const isSupported = 'serviceWorker' in navigator && 'PushManager' in window;
+        setIsSupported(isSupported);
+        const permission = Notification.permission;
+        setIsGranted(permission);
+        console.log('Notification permission:', permission);
+        console.log('Push Notification supported:', isSupported);
+        if (typeof window !== 'undefined') {
+            const userId = localStorage.getItem('userId');
+            setUserId(userId);
         }
     }, []);
 
-    async function subscribe() {
+    async function initPushNotifications() {
+        if (isGranted === 'default') {
+            const permission = await Notification.requestPermission();
+            setIsGranted(permission);
+        }
+        if (isGranted !== 'granted' || !isSupported) {
+            console.log('Push notifications not granted or supported.');
+            return;
+        }
         const registration = await navigator.serviceWorker.register('/sw.js', {
             scope: '/',
             updateViaCache: 'none',
         });
+        console.log('SW ready:', registration.active);
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
         });
         const serializedSub = JSON.parse(JSON.stringify(subscription));
-        const user = await createUser.mutateAsync({
+        console.log('Push Subscription:', serializedSub);
+        return serializedSub;
+    }
+
+    async function subscribe() {
+        const serializedSub = await initPushNotifications();
+        if (!serializedSub) return;
+        const userData = {
             nickname,
             email,
             subscription: serializedSub,
             channels: [channel],
-        });
-        setUserId(user.id);
-        localStorage.setItem('userId', user.id);
+        };
+        console.log('Creating user with data:', userData);
+        const response = await createUser.mutateAsync(userData);
+        if (response.success) {
+            const createdUser = response.user;
+            setUserId(createdUser.id);
+            localStorage.setItem('userId', createdUser.id);
+        }
     }
 
     async function unsubscribe() {
@@ -88,10 +111,13 @@ function PushNotificationManager() {
                 <h1 className="text-4xl font-bold mr-2">Push Notifications</h1>
                 <Megaphone size={32} />
             </div>
-            {!isSupported ? (
+            {!isSupported || isGranted === 'denied' ? (
                 <div className="bg-red-800 font-medium rounded-lg p-6 flex items-start">
                     <CircleAlert className="mr-3 shrink-0 mt-0.5" />
-                    <p>Your browser does not support push notifications.</p>
+                    <p>
+                        Your browser does not support push notifications or has no permission to send them. Please try
+                        to enable notifications in your browser settings.
+                    </p>
                 </div>
             ) : (
                 <div className="border-2 border-amber-100 p-6 rounded-lg">
@@ -101,7 +127,7 @@ function PushNotificationManager() {
                             <div className="mb-6">
                                 <p>You are subscribed to push notifications.</p>
                                 <div className="flex flex-wrap break-all bg-amber-100 rounded-lg p-3 mt-2 text-black">
-                                    Example code for a request...
+                                    {user.nickname} | {user.email}
                                 </div>
                             </div>
                             <div className="mb-6">
