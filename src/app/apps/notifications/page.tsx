@@ -129,7 +129,7 @@ function PushNotificationManager() {
                             <div className="mb-6">
                                 <p>You are subscribed to push notifications.</p>
                                 <div className="flex flex-wrap break-all bg-amber-100 rounded-lg p-3 mt-2 text-black">
-                                    {user.nickname} | {user.email}
+                                    {user.nickname} | {user.email} | <span className="text-sm">{JSON.stringify(user.subscription)}</span>
                                 </div>
                             </div>
                             <div className="mb-6">
