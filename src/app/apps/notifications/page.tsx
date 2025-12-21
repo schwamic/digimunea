@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Share, Plus, CircleAlert, Megaphone, Github } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Button from '@src/app/apps/notifications/_components/Button';
@@ -124,12 +124,13 @@ function PushNotificationManager() {
             ) : (
                 <div className="border-2 border-amber-100 p-6 rounded-lg">
                     <h3 className="text-2xl font-bold mb-4">Subscription</h3>
-                    {user && user.subscription ? (
+                    {user ? (
                         <>
                             <div className="mb-6">
                                 <p>You are subscribed to push notifications.</p>
                                 <div className="flex flex-wrap break-all bg-amber-100 rounded-lg p-3 mt-2 text-black">
-                                    {user.nickname} | {user.email} | <span className="text-sm">{JSON.stringify(user.subscription)}</span>
+                                    {user.nickname} | {user.email} |{' '}
+                                    <span className="text-sm">{JSON.stringify(user?.subscription)}</span>
                                 </div>
                             </div>
                             <div className="mb-6">
