@@ -30,19 +30,19 @@ function PushNotificationManager() {
     const [channel, setChannel] = useState('');
 
     useEffect(() => {
-        const isSupported = 'serviceWorker' in navigator && 'PushManager' in window;
+        const isSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
         setIsSupported(isSupported);
-        const permission = Notification.permission;
-        setIsGranted(permission);
-        console.log('Notification permission:', permission);
-        console.log('Push Notification supported:', isSupported);
-        if (typeof window !== 'undefined') {
-            const userId = localStorage.getItem('userId');
-            setUserId(userId);
+        if (isSupported) {
+            const permission = Notification.permission;
+            setIsGranted(permission);
         }
+        const userId = localStorage.getItem('userId');
+        setUserId(userId);
     }, []);
 
     async function initPushNotifications() {
+        console.log('Push Notification supported:', isSupported);
+        console.log('Notification permission:', isGranted);
         if (isGranted === 'default') {
             const permission = await Notification.requestPermission();
             setIsGranted(permission);

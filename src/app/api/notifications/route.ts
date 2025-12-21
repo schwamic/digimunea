@@ -11,6 +11,7 @@ export async function PUT(request: NextRequest) {
         const response = await service.upsertUser(data);
         return NextResponse.json(response, { status: 200 });
     } catch (error) {
+        console.error('Error:', error);
         return NextResponse.json({ error: `Failed to create or update user: ${error}` }, { status: 400 });
     }
 }
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
                 const response = await service.sendNotification(message);
                 return NextResponse.json(response, { status: 200 });
             } catch (error) {
+                console.error('Error:', error);
                 return NextResponse.json({ error: `Failed to send message: ${error}` }, { status: 400 });
             }
         default:
