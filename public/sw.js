@@ -3,7 +3,7 @@ self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
         const options = {
-            body: 'Test Test Nachricht', //data.body
+            body: data.body,
             icon: data.icon || '/icon-192x192.png',
             badge: '/badge-96x96.png',
             vibrate: [100, 50, 100],
@@ -12,7 +12,7 @@ self.addEventListener('push', function (event) {
                 primaryKey: '2',
             },
         };
-        event.waitUntil(self.registration.showNotification('data.title', options));
+        event.waitUntil(self.registration.showNotification(data.title, options));
     }
 });
 
