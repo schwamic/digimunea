@@ -135,7 +135,7 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     const { user, subscribe, unsubscribe, updateChannels } = useAccount();
     const [nickname, setNickname] = useState(user?.nickname || '');
     const [email, setEmail] = useState(user?.email || '');
-    const [channel, setChannel] = useState(user.data?.channels?.[0]?.channel?.name ?? '');
+    const [channel, setChannel] = useState(user?.channels?.[0]?.channel?.name ?? '');
     const [isLoading, setIsLoading] = useState(false);
 
     async function submit() {
@@ -261,7 +261,7 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
     char* apiUrl = "https://digimunea.de/api/notifications";
     char* userId = "${user?.id}";
-    char* channelId = "${user.data?.channels?.[0]?.channelId}";
+    char* channelId = "${user?.channels?.[0]?.channelId}";
     char* title = "Test";
     char* body = "Testbenachrichtigung von deinem IoT-Gerät!";
 
