@@ -1,260 +1,348 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Share, Plus, CircleAlert, Megaphone, Github } from 'lucide-react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Button from '@src/app/apps/notifications/_components/Button';
-import Input from '@src/app/apps/notifications/_components/Input';
-import useApi from '@src/lib/hooks/useApi';
+import React, { useState, useEffect } from 'react';
+import { Copy, Info, Plus, Share, TriangleAlert } from 'lucide-react';
+import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
+import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
+import Markdown from 'markdown-to-jsx/react';
 
-function urlBase64ToUint8Array(base64String: string) {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
+export default function NotificationsPage() {
+    const { isSupported, isGranted } = usePushService();
+    const { user, isLoading } = useAccount();
+
+    return (
+        <div>
+            <div className="mb-8 text-pretty">
+                <Header className="my-24" />
+                {isSupported !== null && !isSupported && !isLoading && (
+                    <StatusCard
+                        className="mb-6"
+                        size="large"
+                        data={{
+                            message:
+                                'Dein Browser unterstützt keine Push-Benachrichtigungen. Verwende einen anderen Browser wie zum Beispiel Firefox, Safari oder Chrome.',
+                        }}
+                    />
+                )}
+                {isGranted === 'denied' && !isLoading && (
+                    <StatusCard
+                        className="mb-6"
+                        size="large"
+                        data={{
+                            message:
+                                'Du hast die Berechtigungen für Push-Benachrichtigungen in deinen Browsereinstellungen deaktiviert. Bitte aktiviere sie, um Push-Benachrichtigungen zu erhalten.',
+                        }}
+                    />
+                )}
+                {isSupported && !isLoading && !user && <SetupGuide />}
+                {isSupported && !isLoading && user && (
+                    <>
+                        <Card className="bg-livid-400 mb-6" size="small">
+                            <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
+                            <StatusCard
+                                icon="info"
+                                data={{
+                                    title: 'Noch Funkstille, aber das kann sich schnell ändern ✨',
+                                    message:
+                                        'Schicke dir eine Testnachricht oder nutze den Beispiel-Code, um dir Benachrichtigungen zu schicken.',
+                                }}
+                            />
+                            {/* TODO: List Push-Notifications */}
+                        </Card>
+                        <Card className="bg-livid-400" size="small">
+                            <h3 className="text-2xl font-bold mb-6">Dein Zugang</h3>
+                            <TestingSection className="mb-6" />
+                            <SampleSection className="mb-6" />
+                            <AccountSection />
+                        </Card>
+                    </>
+                )}
+            </div>
+        </div>
+    );
 }
 
-function PushNotificationManager() {
-    const { useUser, createUser, removeUser, sendMessage } = useApi();
-    const [userId, setUserId] = useState<string | null>(null);
-    const { data: user, isLoading, error } = useUser(userId);
-    const [isSupported, setIsSupported] = useState(false);
-    const [isGranted, setIsGranted] = useState<NotificationPermission>('default');
-    const [message, setMessage] = useState('');
-    const [nickname, setNickname] = useState('');
-    const [email, setEmail] = useState('');
-    const [channel, setChannel] = useState('');
+function SetupGuide() {
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
-        const isSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-        setIsSupported(isSupported);
-        if (isSupported) {
-            const permission = Notification.permission;
-            setIsGranted(permission);
-        }
-        const userId = localStorage.getItem('userId');
-        setUserId(userId);
+        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+        const handler = (e: Event) => {
+            e.preventDefault();
+            setDeferredPrompt(e as BeforeInstallPromptEvent);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handler);
+        };
     }, []);
 
-    async function initPushNotifications() {
-        let permission = isGranted;
-        if (permission === 'default') {
-            permission = await Notification.requestPermission();
-            setIsGranted(permission);
-        }
-        if (permission !== 'granted' || !isSupported) {
-            console.log(
-                'Push notifications not granted or supported:',
-                `{isSupported: ${isSupported}, isGranted: ${permission}}`,
-            );
+    const promptInstall = async () => {
+        if (!deferredPrompt) return;
+        await deferredPrompt.prompt();
+    };
+
+    return (
+        <Card className="bg-livid-400">
+            {!isStandalone ? (
+                <>
+                    <h3 className="text-2xl font-bold mb-4">App installieren</h3>
+                    <p>
+                        Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu
+                        installieren:
+                    </p>
+                    <Card className="my-4 bg-livid-700 text-livid-100" size="small">
+                        <p className="font-bold">Android</p>
+                        <Button
+                            onClick={promptInstall}
+                            className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={!deferredPrompt}
+                        >
+                            App installieren
+                        </Button>
+                    </Card>
+                    <Card className="bg-livid-700 text-livid-100" size="small">
+                        <p className="font-bold mb-1">iOS</p>
+                        <ol className="list-decimal list-inside">
+                            <li>
+                                Tippe auf den <span className="italic font-bold">Teilen-Button</span>{' '}
+                                <Share className="inline" />.
+                            </li>
+                            <li>
+                                Wähle <span className="italic font-bold">Zum Startbildschirm hinzufügen</span>{' '}
+                                <Plus className="inline" /> aus
+                            </li>
+                        </ol>
+                    </Card>
+                </>
+            ) : (
+                <>
+                    <h3 className="text-2xl font-bold mb-4">Zugang erstellen</h3>
+                    <p className="mb-4">
+                        Die Nutzung von P15Ns ist kostenlos und nur für private Hobby-Projekte erlaubt. Mit der
+                        Erstellung deines Kontos stimmst du diesen Nutzungsbedingungen zu. Es werden keine weiteren
+                        Daten gespeichert!
+                    </p>
+                    <AccountSection />
+                </>
+            )}
+        </Card>
+    );
+}
+
+function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
+    const { user, subscribe, unsubscribe, updateChannels } = useAccount();
+    const [nickname, setNickname] = useState(user?.nickname || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [channel, setChannel] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    async function submit() {
+        if (isLoading) return;
+        const isNicknameValid = nickname.length > 0;
+        const isEmailValid = email.length > 0 && email.includes('@');
+        const isChannelValid = channel.length > 0;
+        if (!isNicknameValid || !isEmailValid || !isChannelValid) {
+            alert('Ups, da stimmt noch nicht alles – schau bitte nochmal drüber 👀');
             return;
         }
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-            scope: '/',
-            updateViaCache: 'none',
-        });
-        console.log('SW ready:', registration.active);
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
-        });
-        const serializedSub = JSON.parse(JSON.stringify(subscription));
-        console.log('Push Subscription:', serializedSub);
-        return serializedSub;
-    }
-
-    async function subscribe() {
-        const serializedSub = await initPushNotifications();
-        if (!serializedSub) return;
-        const userData = {
-            nickname,
-            email,
-            subscription: serializedSub,
-            channels: [channel],
-        };
-        console.log('Creating user with data:', userData);
-        const response = await createUser.mutateAsync(userData);
-        if (response.success) {
-            const createdUser = response.user;
-            setUserId(createdUser.id);
-            localStorage.setItem('userId', createdUser.id);
+        setIsLoading(true);
+        if (!user) {
+            await subscribe({ nickname, email, channels: [channel] });
+        } else {
+            await updateChannels(channel);
         }
+        setIsLoading(false);
     }
 
-    async function unsubscribe() {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
-        await subscription?.unsubscribe();
-        await removeUser.mutateAsync(userId!);
-        localStorage.removeItem('userId');
-        setUserId(null);
+    async function deleteAccount() {
+        if (isLoading) return;
+        setIsLoading(true);
+        await unsubscribe();
+        setIsLoading(false);
     }
+
+    return (
+        <Card className={`bg-violet-400 ${className}`} size="small">
+            <h3 className="font-bold text-xl mb-4 text-violet-900">Dein Konto</h3>
+            <Input
+                id="nickname"
+                label="*Dein Name"
+                labelStyle="text-violet-700"
+                inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
+                type="text"
+                disabled={user}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+            />
+            <Input
+                id="email"
+                label="*Deine E-Mail-Adresse"
+                labelStyle="text-violet-700"
+                inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
+                type="text"
+                disabled={user}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+                id="channel"
+                label="*Kanal (kann von mehreren Personen verwendet werden)"
+                labelStyle="text-violet-700"
+                inputStyle="mb-3 text-violet-900 bg-livid-100"
+                type="text"
+                value={channel}
+                onChange={(e) => setChannel(e.target.value)}
+            />
+            <div className="flex mt-4">
+                <Button className="bg-violet-700 text-livid-100" onClick={submit} disabled={isLoading}>
+                    {!user ? 'Kostenlos anmelden' : 'Einstellungen speichern'}
+                </Button>
+                {user && (
+                    <Button className="ml-4 text-red-500 border-red-500!" onClick={deleteAccount} disabled={isLoading}>
+                        Konto löschen
+                    </Button>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
+    const { user } = useAccount();
+    const { sendMessage } = useApi();
+    const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     async function sendTestNotification() {
-        if (user && user.subscription && message.length > 0) {
-            await sendMessage.mutateAsync({
-                title: 'Test Notification',
-                body: 'TEST TEST TEST! If you see this, push notifications are working.',
-                userId: user.id,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                channelId: user.channels.find((c: any) => c.channel.name === channel)?.channel.id || null,
-            });
-            setMessage('');
+        if (isLoading) return;
+        const isMessageValid = message.length > 0;
+        if (!isMessageValid) {
+            alert('Bitte gib eine Nachricht ein. Gedankenübertragung ist noch im Beta-Test 😜');
+            return;
         }
+        setIsLoading(true);
+        await sendMessage.mutateAsync({
+            title: 'Testnachricht',
+            body: message,
+            userId: user.id,
+            channelId: user.channels[0]?.channelId,
+        });
+        setMessage('');
+        setIsLoading(false);
     }
 
     return (
-        <div className="text-lg mb-8 text-pretty">
-            <div className="flex items-center mb-8">
-                <h1 className="text-4xl font-bold mr-2">Push Notifications</h1>
-                <Megaphone size={32} />
+        <Card className={`mb-6 bg-livid-700 flex flex-col items-center ${className}`}>
+            <Input
+                id="message"
+                inputStyle="mb-5 text-livid-800 bg-livid-100"
+                type="text"
+                placeholder="Enter notification message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+            />
+            <Button className="bg-red-400 text-livid-100" onClick={sendTestNotification} disabled={isLoading}>
+                Testnachricht senden
+            </Button>
+        </Card>
+    );
+}
+
+function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
+    const { user } = useAccount();
+    const sampleCode = `
+    #include <WiFi.h>
+    #include <HTTPClient.h>
+    #include <WiFiManager.h>  // https://github.com/tzapu/WiFiManager
+
+    char* apiUrl = "https://digimunea.de/api/notifications";
+    char* userId = "${user?.id}";
+    char* channelId = "${user?.channels[0]?.channelId}";
+    char* message = "Hello World";
+
+    void setupWiFi() {}
+    void sendData(float moistureVoltage, float moisturePercent, float batteryVoltage) { 
+        if (WiFi.status() == WL_CONNECTED) { 
+            HTTPClient http; 
+            http.begin(apiUrl);
+            http.addHeader("Content-Type", "application/json");
+            String json = "{";
+            json += "\"userId\": \"" + String(userId) + "\",";
+            json += "\"channelId\": \"" + String(channelId) + "\",";
+            json += "\"message\": \"" + String(message) + "\",";
+            int httpResponseCode = http.POST(json);
+            Serial.println("Response: " + String(httpResponseCode));        
+            Serial.println("Payload: " + json);
+            http.end();
+        } else { 
+            Serial.println("WiFi not connected, skipping data send.");
+        }
+    }`;
+
+    const copyCode = async () => {
+        try {
+            await navigator.clipboard.writeText(sampleCode);
+            alert('Kopiert & einsatzbereit 🚀');
+        } catch (error) {
+            alert('Oje… Kopieren fehlgeschlagen 😅');
+            console.error('Fehler beim Kopieren des Codes:', error);
+        }
+    };
+
+    return (
+        <Card className={`mb-6 bg-livid-700 text-livid-100 ${className}`} size="small">
+            <div className="flex justify-between items-start">
+                <h3 className="font-bold text-xl mb-4">Beispiel-Code</h3>
+                <button type="button" onClick={copyCode}>
+                    <Copy className="text-red-400 hover:cursor-pointer" />
+                </button>
             </div>
-            {!isSupported || isGranted === 'denied' ? (
-                <div className="bg-red-800 font-medium rounded-lg p-6 flex items-start">
-                    <CircleAlert className="mr-3 shrink-0 mt-0.5" />
-                    <p>
-                        Your browser does not support push notifications or has no permission to send them. Please try
-                        to enable notifications in your browser settings.
-                    </p>
-                </div>
+            <div className="mb-6 font-mono text-sm [&_pre]:whitespace-pre-wrap [&_pre]:overflow-x-auto [&_code]:break-words]">
+                <Markdown>{sampleCode}</Markdown>
+            </div>
+            <div className="flex justify-center">
+                <Button onClick={copyCode} className="bg-red-400 text-livid-100">
+                    Code kopieren
+                </Button>
+            </div>
+        </Card>
+    );
+}
+
+function StatusCard({ data, style = 'warning', icon = 'warning', size = 'small', className }: ErrorCardProps) {
+    return (
+        <Card
+            className={`${style === 'info' ? 'bg-livid-700' : 'bg-red-400'} flex items-start ${className}`}
+            size={size}
+        >
+            {icon === 'info' ? (
+                <Info strokeWidth={3} className="shrink-0 mt-1 mr-2" />
             ) : (
-                <div className="border-2 border-amber-100 p-6 rounded-lg">
-                    <h3 className="text-2xl font-bold mb-4">Subscription</h3>
-                    {user ? (
-                        <>
-                            <div className="mb-6">
-                                <p>You are subscribed to push notifications.</p>
-                                <div className="flex flex-wrap break-all bg-amber-100 rounded-lg p-3 mt-2 text-black">
-                                    {user.nickname} | {user.email} |{' '}
-                                    <span className="text-sm">{JSON.stringify(user?.subscription)}</span>
-                                </div>
-                            </div>
-                            <div className="mb-6">
-                                <Input
-                                    required
-                                    className="mb-3"
-                                    type="text"
-                                    placeholder="Enter notification message"
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                />
-                                <Button className="mt-1" onClick={sendTestNotification}>
-                                    Send Test
-                                </Button>
-                            </div>
-                            <div className="mb-6">
-                                <Input
-                                    required
-                                    className="mb-3"
-                                    type="text"
-                                    placeholder="Channel to join (optional)"
-                                    value={channel}
-                                    onChange={(e) => setChannel(e.target.value)}
-                                />
-                                <Button className="mt-1" onClick={sendTestNotification}>
-                                    Join Channel
-                                </Button>
-                            </div>
-                            <div>
-                                <p>To unsubscribe from push notifications, click the button below:</p>
-                                <Button className="mt-2" onClick={unsubscribe}>
-                                    Unsubscribe
-                                </Button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <p className="mb-3 text-pretty">
-                                Fill in the following fields to subscribe to push notifications:
-                            </p>
-                            <Input
-                                required
-                                className="mb-3"
-                                type="text"
-                                placeholder="Enter your nickname"
-                                value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
-                            />
-                            <Input
-                                required
-                                className="mb-3"
-                                type="text"
-                                placeholder="Enter your email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <Input
-                                required
-                                className="mb-3"
-                                type="text"
-                                placeholder="Enter your channel (optional)"
-                                value={channel}
-                                onChange={(e) => setChannel(e.target.value)}
-                            />
-                            <Button className="mt-1" onClick={subscribe}>
-                                Subscribe
-                            </Button>
-                        </>
-                    )}
-                </div>
+                <TriangleAlert strokeWidth={3} className="shrink-0 mt-1 mr-2" />
             )}
-        </div>
-    );
-}
-
-function InstallPrompt() {
-    const [isIOS, setIsIOS] = useState(false);
-    const [isStandalone, setIsStandalone] = useState(false);
-
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream);
-        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
-    }, []);
-
-    if (isStandalone) {
-        return null; // Don't show install button if already installed
-    }
-
-    return (
-        <div className="bg-amber-600 p-6 rounded-lg text-lg font-medium text-pretty">
-            <h3 className="text-2xl font-bold mb-4">Install App</h3>
-            <p>To setup push notifactions, you need to install this tiny app:</p>
-            <div className="my-4">
-                <p className="font-bold">Android</p>
-                <Button className="bg-amber-700 mt-1">Add to Home Screen</Button>
-            </div>
             <div>
-                <p className="font-bold">iOS</p>
-                <p>
-                    Tap the <span className="italic">Share Button</span> <Share className="inline" /> and then click on{' '}
-                    <span className="italic">Add to Home Screen</span> <Plus className="inline" />.
+                <p className={`${size === 'small' ? 'text-xl mb-2' : 'text-2xl mb-4'} font-bold`}>
+                    {data?.title || 'Schade Marmelade'}
                 </p>
+                <p>{data.message}</p>
             </div>
-        </div>
+        </Card>
     );
 }
 
-const queryClient = new QueryClient();
+type ErrorCardProps = Readonly<{
+    data: {
+        title?: string;
+        message: string;
+    };
+    icon?: 'warning' | 'info';
+    style?: 'warning' | 'info';
+    size?: 'small' | 'large';
+}> &
+    React.HTMLAttributes<HTMLDivElement>;
 
-export default function NotificationPage() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <PushNotificationManager />
-            <InstallPrompt />
-            <div className="my-16 text-center">
-                <a
-                    className="text-shadow-amber-50 underline"
-                    href="https://github.com/schwamic/digimunea/tree/main/src/app/apps"
-                    target="_blank"
-                >
-                    P15Ns on Github <Github className="inline ml-1" />
-                </a>
-            </div>
-        </QueryClientProvider>
-    );
-}
+type BeforeInstallPromptEvent = {
+    prompt(): Promise<void>;
+} & Event;

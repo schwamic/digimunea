@@ -1,5 +1,3 @@
-'use client';
-
 import { NewUser, Message, UpdateUser } from '@src/app/api/notifications/route';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 

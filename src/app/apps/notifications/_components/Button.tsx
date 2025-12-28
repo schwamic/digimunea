@@ -1,8 +1,9 @@
 export default function Button({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     return (
         <button
-            className={`bg-amber-800 text-sm rounded-lg px-3 py-1.5 font-bold cursor-pointer hover:bg-amber-900 ${className}`}
             {...props}
+            className={`text-sm rounded-full px-5 py-1 font-bold cursor-pointer border-3 border-transparent ${className}`}
+            type="button"
         >
             {children}
         </button>

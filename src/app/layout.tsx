@@ -1,5 +1,4 @@
 import { Noto_Sans_Mono, Noto_Sans, Jersey_15 } from 'next/font/google';
-import '@src/styles/globals.css';
 
 const notoSans = Noto_Sans({
     variable: '--font-noto-sans',

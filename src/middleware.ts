@@ -8,14 +8,14 @@ export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const hostname = host.split(':')[0];
 
-    // ROOT
+    // ROOT (home)
     if (hostname === DOMAIN || hostname === `www.${DOMAIN}` || hostname === LOCALHOST) {
         const url = request.nextUrl.clone();
         url.pathname = `/home${pathname}`;
         return NextResponse.rewrite(url);
     }
 
-    // SUBDOMAIN
+    // SUBDOMAIN (apps)
     const isLocalhost = hostname.endsWith(`.${LOCALHOST}`);
     const isDomain = hostname.endsWith(`.${DOMAIN}`);
     if (isDomain || isLocalhost) {

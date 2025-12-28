@@ -203,11 +203,14 @@ const Message = z.object({
     body: z.string().min(1).max(500),
 });
 
-const NewUser = z.object({
+const CreateUser = z.object({
     nickname: z.string().min(2).max(20),
     email: z.email(),
-    subscription: Subscription,
     channels: z.array(z.string()).min(1).max(20),
+});
+
+const NewUser = CreateUser.extend({
+    subscription: Subscription,
 });
 
 const UpdateUser = z.object({
@@ -218,5 +221,6 @@ const UpdateUser = z.object({
 export type Subscription = z.infer<typeof Subscription>;
 export type Message = z.infer<typeof Message>;
 export type NewUser = z.infer<typeof NewUser>;
+export type CreateUser = z.infer<typeof CreateUser>;
 export type UpdateUser = z.infer<typeof UpdateUser>;
 type ChannelUser = { user: Prisma.UserGetPayload<{ select: { subscription: true; nickname: true } }> };

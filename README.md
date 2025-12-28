@@ -32,3 +32,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Docs
 
 - [NextJS Guides: PWA](https://nextjs.org/docs/app/guides/progressive-web-apps#3-implementing-server-actions)
+
+## Code
+
+```C
+const a = "a";
+```

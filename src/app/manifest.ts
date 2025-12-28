@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'A push notification service for hobby projects.',
         start_url: '/',
         display: 'standalone',
-        background_color: '#111111',
-        theme_color: '#111111',
+        background_color: '#bad7de',
+        theme_color: '#213e45',
         icons: [
             {
                 src: '/icon-192x192.png',
