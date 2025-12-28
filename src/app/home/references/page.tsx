@@ -145,7 +145,7 @@ const content = {
                 { text: 'Technische Mitarbeit an der ' },
                 {
                     text: 'Asset Performance Management (APM)',
-                    link: 'https://www.reinhausen.com/fileadmin/downloadcenter/products/asset_management/tessa_r_apm/flyer/tessa_apm_en.pdf',
+                    link: 'https://www.reinhausen.com/de/productdetail/asset-management/tessa-apm',
                 },
                 { text: ' Software' },
             ],
