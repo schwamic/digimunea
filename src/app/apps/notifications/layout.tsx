@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
     return (
         <ReactQueryProvider>
-            <main className="font-sans mt-16 mb-12 max-w-2xl px-4 m-auto">{children}</main>
+            <main className="font-sans mt-16 mb-12 max-w-2xl sm:px-4 m-auto">{children}</main>
             <Footer />
         </ReactQueryProvider>
     );

@@ -35,7 +35,7 @@ export default function NotificationsPage() {
                     />
                 )}
                 {isSupported && !isLoading && !user && <SetupGuide />}
-                {isSupported && !isLoading && user && (
+                {isSupported && isGranted === 'granted' && !isLoading && user && (
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
                             <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
@@ -96,7 +96,7 @@ function SetupGuide() {
                         <p className="font-bold">Android</p>
                         <Button
                             onClick={promptInstall}
-                            className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50 w-56"
                             disabled={!deferredPrompt}
                         >
                             App installieren
@@ -135,7 +135,7 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     const { user, subscribe, unsubscribe, updateChannels } = useAccount();
     const [nickname, setNickname] = useState(user?.nickname || '');
     const [email, setEmail] = useState(user?.email || '');
-    const [channel, setChannel] = useState('');
+    const [channel, setChannel] = useState(user.data?.channels?.[0]?.channel?.name ?? '');
     const [isLoading, setIsLoading] = useState(false);
 
     async function submit() {
@@ -158,6 +158,8 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
     async function deleteAccount() {
         if (isLoading) return;
+        const confirm = window.confirm('Konto löschen? Dramatische Musik setzt ein 🎻');
+        if (!confirm) return;
         setIsLoading(true);
         await unsubscribe();
         setIsLoading(false);
@@ -195,12 +197,12 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
                 value={channel}
                 onChange={(e) => setChannel(e.target.value)}
             />
-            <div className="flex mt-4">
-                <Button className="bg-violet-700 text-livid-100" onClick={submit} disabled={isLoading}>
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
+                <Button className="bg-violet-700 text-livid-100 w-56" onClick={submit} disabled={isLoading}>
                     {!user ? 'Kostenlos anmelden' : 'Einstellungen speichern'}
                 </Button>
                 {user && (
-                    <Button className="ml-4 text-red-500 border-red-500!" onClick={deleteAccount} disabled={isLoading}>
+                    <Button className="text-red-500 border-red-500! w-56" onClick={deleteAccount} disabled={isLoading}>
                         Konto löschen
                     </Button>
                 )}
@@ -227,7 +229,7 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
             title: 'Testnachricht',
             body: message,
             userId: user.id,
-            channelId: user.channels[0]?.channelId,
+            channelId: user.channels[0].channelId,
         });
         setMessage('');
         setIsLoading(false);
@@ -237,13 +239,13 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
         <Card className={`mb-6 bg-livid-700 flex flex-col items-center ${className}`}>
             <Input
                 id="message"
-                inputStyle="mb-5 text-livid-800 bg-livid-100"
+                inputStyle="mb-6 text-livid-800 bg-livid-100"
                 type="text"
                 placeholder="Enter notification message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
             />
-            <Button className="bg-red-400 text-livid-100" onClick={sendTestNotification} disabled={isLoading}>
+            <Button className="bg-red-400 text-livid-100 w-56" onClick={sendTestNotification} disabled={isLoading}>
                 Testnachricht senden
             </Button>
         </Card>
@@ -259,8 +261,9 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
     char* apiUrl = "https://digimunea.de/api/notifications";
     char* userId = "${user?.id}";
-    char* channelId = "${user?.channels[0]?.channelId}";
-    char* message = "Hello World";
+    char* channelId = "${user.data?.channels?.[0]?.channelId}";
+    char* title = "Test";
+    char* body = "Testbenachrichtigung von deinem IoT-Gerät!";
 
     void setupWiFi() {}
     void sendData(float moistureVoltage, float moisturePercent, float batteryVoltage) { 
@@ -271,7 +274,8 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
             String json = "{";
             json += "\"userId\": \"" + String(userId) + "\",";
             json += "\"channelId\": \"" + String(channelId) + "\",";
-            json += "\"message\": \"" + String(message) + "\",";
+            json += "\"title\": \"" + String(title) + "\",";
+            json += "\"body\": \"" + String(body) + "\",";
             int httpResponseCode = http.POST(json);
             Serial.println("Response: " + String(httpResponseCode));        
             Serial.println("Payload: " + json);
@@ -303,7 +307,7 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
                 <Markdown>{sampleCode}</Markdown>
             </div>
             <div className="flex justify-center">
-                <Button onClick={copyCode} className="bg-red-400 text-livid-100">
+                <Button onClick={copyCode} className="bg-red-400 text-livid-100 w-56">
                     Code kopieren
                 </Button>
             </div>

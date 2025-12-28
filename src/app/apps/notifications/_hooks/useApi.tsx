@@ -34,7 +34,7 @@ export default function useApi() {
                 body: JSON.stringify({ userId }),
             }).then((res) => res.json()),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user'] });
+            queryClient.setQueryData(['user'], null);
         },
     });
 
