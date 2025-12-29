@@ -5,13 +5,12 @@ const LOCALHOST = 'localhost';
 
 export function middleware(request: NextRequest) {
     const host = request.headers.get('host') ?? '';
-    const pathname = request.nextUrl.pathname;
+    const url = request.nextUrl.clone();
     const hostname = host.split(':')[0];
 
     // ROOT (home)
     if (hostname === DOMAIN || hostname === `www.${DOMAIN}` || hostname === LOCALHOST) {
-        const url = request.nextUrl.clone();
-        url.pathname = `/home${pathname}`;
+        url.pathname = `/home${url.pathname}`;
         return NextResponse.rewrite(url);
     }
 
@@ -20,8 +19,7 @@ export function middleware(request: NextRequest) {
     const isDomain = hostname.endsWith(`.${DOMAIN}`);
     if (isDomain || isLocalhost) {
         const subdomain = isDomain ? hostname.replace(`.${DOMAIN}`, '') : hostname.replace(`.${LOCALHOST}`, '');
-        const url = request.nextUrl.clone();
-        url.pathname = `/apps/${subdomain}${pathname}`;
+        url.pathname = `/apps/${subdomain}${url.pathname}`;
         return NextResponse.rewrite(url);
     }
 
@@ -29,5 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/((?!api|_next|_static|_vercel|.*\\..+).*)'],
+    matcher: ['/((?!api|_next|_static|_vercel|.*\\..+).*)', '/favicon.ico'],
 };

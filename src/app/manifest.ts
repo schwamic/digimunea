@@ -4,24 +4,31 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Push Notifications',
+        name: 'Push Notifications [P15Ns]',
         short_name: 'P15Ns',
         description: 'A push notification service for hobby projects.',
         start_url: '/',
+        scope: '/',
         display: 'standalone',
         background_color: '#bad7de',
-        theme_color: '#213e45',
+        theme_color: '#bad7de',
+        lang: 'de',
         icons: [
             {
-                src: '/icon-192x192.png',
+                src: '/apps/notifications/icon-192x192.png',
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: '/icon-512x512.png',
+                src: '/apps/notifications/icon-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
+                purpose: 'maskable',
+            },
+            {
+                src: '/apps/notifications/icon.svg',
+                type: 'image/svg+xml',
                 purpose: 'maskable',
             },
         ],

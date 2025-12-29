@@ -75,7 +75,10 @@ function SetupGuide() {
     return !isStandalone ? (
         <Card className="bg-livid-400">
             <h3 className="text-2xl font-bold mb-4">App installieren</h3>
-            <p>Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu installieren. Zum Beispiel:</p>
+            <p>
+                Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu installieren. Zum
+                Beispiel:
+            </p>
             <Card className="my-4 bg-livid-700 text-livid-100" size="small">
                 <p className="font-bold">Android (Chrome)</p>
                 <Button
