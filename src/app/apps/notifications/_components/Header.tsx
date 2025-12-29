@@ -1,7 +1,17 @@
+import Image from 'next/image';
+
 export default function Header({ className }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div className={`flex flex-col sm:flex-row items-center justify-center gap-5 ${className}`}>
-            <div className="bg-livid-700 w-20 h-20 rounded-lg text-red-400 font-black">APP_ICON</div>
+            <div>
+                <Image
+                    src="/apps/notifications/icon.svg"
+                    alt="P15Ns Logo"
+                    width={72}
+                    height={72}
+                    className="mt-1.5 rounded-xl shrink-0"
+                />
+            </div>
             <div>
                 <h1 className="text-4xl font-bold text-livid-700">
                     {content.long}
