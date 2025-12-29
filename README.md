@@ -14,8 +14,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Apps
 
-* [P15Ns](https://notifications.digimunea.de)
-* [Microsite](https://digimunea.de)
+- [P15Ns](https://notifications.digimunea.de)
+- [Microsite](https://digimunea.de)
 
 ## Deploy on Vercel
 
