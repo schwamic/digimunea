@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
 export default function usePushService() {
-    const [isSupported, setIsSupported] = useState<boolean | null>(null);
+    const [isSupported, setIsSupported] = useState(false);
     const [isGranted, setIsGranted] = useState<NotificationPermission>('default');
 
     useEffect(() => {
-        const isSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+        const isSupported = 'serviceWorker' in navigator && 'Notification' in window;
         setIsSupported(isSupported);
         if (isSupported) {
             const permission = Notification.permission;
@@ -14,23 +14,22 @@ export default function usePushService() {
     }, []);
 
     async function subscribePushService() {
+        if (!isSupported) return;
         let permission = isGranted;
         if (permission === 'default') {
             permission = await Notification.requestPermission();
             setIsGranted(permission);
-        }
-        if (permission !== 'granted' || !isSupported) {
-            console.log(
-                'Push notifications not granted or supported:',
-                `{isSupported: ${isSupported}, isGranted: ${permission}}`,
-            );
-            return;
         }
         const registration = await navigator.serviceWorker.register('/sw.js', {
             scope: '/',
             updateViaCache: 'none',
         });
         console.log('SW ready:', registration.active);
+        if (!('pushManager' in registration)) {
+            console.log('Push Manager not supported in Service Worker registration.');
+            setIsSupported(false);
+            return;
+        }
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),

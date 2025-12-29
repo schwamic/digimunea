@@ -102,7 +102,7 @@ function SetupGuide() {
         </Card>
     ) : (
         <>
-            {isSupported !== null || !isSupported ? (
+            {!isSupported ? (
                 <StatusCard
                     className="mb-6"
                     size="large"
