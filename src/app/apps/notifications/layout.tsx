@@ -23,6 +23,9 @@ export const metadata: Metadata = {
         statusBarStyle: 'default',
         title: APP_DEFAULT_TITLE,
     },
+    icons: {
+        apple: [{ url: '/apps/notifications/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    },
     formatDetection: {
         telephone: false,
     },

@@ -21,15 +21,32 @@ export default function manifest(): MetadataRoute.Manifest {
                 purpose: 'maskable',
             },
             {
+                src: '/apps/notifications/icon-192x192.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'any',
+            },
+            {
                 src: '/apps/notifications/icon-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
+                src: '/apps/notifications/icon-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any',
+            },
+            {
                 src: '/apps/notifications/icon.svg',
                 type: 'image/svg+xml',
                 purpose: 'maskable',
+            },
+            {
+                src: '/apps/notifications/icon.svg',
+                type: 'image/svg+xml',
+                purpose: 'any',
             },
         ],
     };
