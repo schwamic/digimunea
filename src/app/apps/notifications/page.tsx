@@ -75,9 +75,9 @@ function SetupGuide() {
     return !isStandalone ? (
         <Card className="bg-livid-400">
             <h3 className="text-2xl font-bold mb-4">App installieren</h3>
-            <p>Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu installieren:</p>
+            <p>Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu installieren. Zum Beispiel:</p>
             <Card className="my-4 bg-livid-700 text-livid-100" size="small">
-                <p className="font-bold">Android</p>
+                <p className="font-bold">Android (Chrome)</p>
                 <Button
                     onClick={promptInstall}
                     className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50 w-56"
@@ -87,14 +87,14 @@ function SetupGuide() {
                 </Button>
             </Card>
             <Card className="bg-livid-700 text-livid-100" size="small">
-                <p className="font-bold mb-1">iOS</p>
+                <p className="font-bold mb-1">iOS/MacOS (Safari)</p>
                 <ol className="list-decimal list-inside">
                     <li>
                         Tippe auf den <span className="italic font-bold">Teilen-Button</span>{' '}
                         <Share className="inline" />.
                     </li>
                     <li>
-                        Wähle <span className="italic font-bold">Zum Startbildschirm hinzufügen</span>{' '}
+                        Wähle <span className="italic font-bold">Zum Startbildschirm/Dock hinzufügen</span>{' '}
                         <Plus className="inline" /> aus
                     </li>
                 </ol>
