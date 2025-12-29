@@ -6,45 +6,29 @@ import { Button, Input, Header, Card } from '@src/app/apps/notifications/_compon
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
 import Markdown from 'markdown-to-jsx/react';
 
-export default function NotificationsPage() {
-    const { isSupported, isGranted } = usePushService();
+export default  function NotificationsPage() {
+    const { isGranted } = usePushService();
     const { user, isLoading } = useAccount();
 
     return (
         <div>
             <div className="mb-8 text-pretty">
                 <Header className="my-24" />
-                {isSupported !== null && !isSupported && !isLoading && (
-                    <StatusCard
-                        className="mb-6"
-                        size="large"
-                        data={{
-                            message:
-                                'Dein Browser unterstützt keine Push-Benachrichtigungen. Verwende einen anderen Browser wie zum Beispiel Firefox, Safari oder Chrome.',
-                        }}
-                    />
-                )}
-                {isGranted === 'denied' && !isLoading && (
-                    <StatusCard
-                        className="mb-6"
-                        size="large"
-                        data={{
-                            message:
-                                'Du hast die Berechtigungen für Push-Benachrichtigungen in deinen Browsereinstellungen deaktiviert. Bitte aktiviere sie, um Push-Benachrichtigungen zu erhalten.',
-                        }}
-                    />
-                )}
-                {isSupported && !isLoading && !user && <SetupGuide />}
-                {isSupported && isGranted === 'granted' && !isLoading && user && (
+                {!isLoading && !user && <SetupGuide />}
+                {!isLoading && user && (
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
                             <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
                             <StatusCard
                                 icon="info"
-                                data={{
+                                data={isGranted !== 'denied' ?{
                                     title: 'Noch Funkstille, aber das kann sich schnell ändern ✨',
                                     message:
                                         'Schicke dir eine Testnachricht oder nutze den Beispiel-Code, um dir Benachrichtigungen zu schicken.',
+                                } : {
+                                    title: 'Schade Marmelade',
+                                    message: 
+                                        'Du hast die Berechtigungen für Push-Benachrichtigungen in deinen Browsereinstellungen deaktiviert. Bitte aktiviere sie, um Push-Benachrichtigungen zu erhalten.',
                                 }}
                             />
                             {/* TODO: List Push-Notifications */}
@@ -63,6 +47,7 @@ export default function NotificationsPage() {
 }
 
 function SetupGuide() {
+    const { isSupported } = usePushService();
     const [isStandalone, setIsStandalone] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
@@ -84,50 +69,61 @@ function SetupGuide() {
     };
 
     return (
-        <Card className="bg-livid-400">
-            {!isStandalone ? (
-                <>
-                    <h3 className="text-2xl font-bold mb-4">App installieren</h3>
-                    <p>
-                        Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu
-                        installieren:
-                    </p>
-                    <Card className="my-4 bg-livid-700 text-livid-100" size="small">
-                        <p className="font-bold">Android</p>
-                        <Button
-                            onClick={promptInstall}
-                            className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50 w-56"
-                            disabled={!deferredPrompt}
-                        >
-                            App installieren
-                        </Button>
-                    </Card>
-                    <Card className="bg-livid-700 text-livid-100" size="small">
-                        <p className="font-bold mb-1">iOS</p>
-                        <ol className="list-decimal list-inside">
-                            <li>
-                                Tippe auf den <span className="italic font-bold">Teilen-Button</span>{' '}
-                                <Share className="inline" />.
-                            </li>
-                            <li>
-                                Wähle <span className="italic font-bold">Zum Startbildschirm hinzufügen</span>{' '}
-                                <Plus className="inline" /> aus
-                            </li>
-                        </ol>
-                    </Card>
-                </>
+        !isStandalone ? (
+            <Card className="bg-livid-400">
+                <h3 className="text-2xl font-bold mb-4">App installieren</h3>
+                <p>
+                    Damit du Push Notifications senden und erhalten kannst, ist es nötig P15Ns als App zu
+                    installieren:
+                </p>
+                <Card className="my-4 bg-livid-700 text-livid-100" size="small">
+                    <p className="font-bold">Android</p>
+                    <Button
+                        onClick={promptInstall}
+                        className="bg-livid-100 text-livid-700 mt-2 disabled:cursor-not-allowed disabled:opacity-50 w-56"
+                        disabled={!deferredPrompt}
+                    >
+                        App installieren
+                    </Button>
+                </Card>
+                <Card className="bg-livid-700 text-livid-100" size="small">
+                    <p className="font-bold mb-1">iOS</p>
+                    <ol className="list-decimal list-inside">
+                        <li>
+                            Tippe auf den <span className="italic font-bold">Teilen-Button</span>{' '}
+                            <Share className="inline" />.
+                        </li>
+                        <li>
+                            Wähle <span className="italic font-bold">Zum Startbildschirm hinzufügen</span>{' '}
+                            <Plus className="inline" /> aus
+                        </li>
+                    </ol>
+                </Card>
+            </Card>
             ) : (
-                <>
-                    <h3 className="text-2xl font-bold mb-4">Zugang erstellen</h3>
-                    <p className="mb-4">
-                        Die Nutzung von P15Ns ist kostenlos und nur für private Hobby-Projekte erlaubt. Mit der
-                        Erstellung deines Kontos stimmst du diesen Nutzungsbedingungen zu. Es werden keine weiteren
-                        Daten gespeichert!
-                    </p>
-                    <AccountSection />
-                </>
-            )}
-        </Card>
+            <>
+                {(isSupported !== null || !isSupported) ? (
+                    <StatusCard
+                        className="mb-6"
+                        size="large"
+                        data={{
+                            message:
+                                'Dein Browser unterstützt keine Push-Benachrichtigungen. Verwende einen anderen Browser wie zum Beispiel Firefox, Safari oder Chrome.',
+                        }}
+                    />
+                ) : (
+                    <Card className="bg-livid-400">
+                        <h3 className="text-2xl font-bold mb-4">Zugang erstellen</h3>
+                        <p className="mb-4">
+                            Die Nutzung von P15Ns ist kostenlos und nur für private Hobby-Projekte erlaubt. Mit der
+                            Erstellung deines Kontos stimmst du diesen Nutzungsbedingungen zu. Es werden keine weiteren
+                            Daten gespeichert!
+                        </p>
+                        <AccountSection />
+                    </Card>
+                )}
+            </>
+            )
     );
 }
 
