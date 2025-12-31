@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Info, Plus, Share, TriangleAlert } from 'lucide-react';
+import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
 import Markdown from 'markdown-to-jsx/react';
@@ -164,46 +164,53 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     }
 
     return (
-        <Card className={`bg-violet-400 ${className}`} size="small">
-            <h3 className="font-bold text-xl mb-4 text-violet-900">Dein Konto</h3>
-            <Input
-                id="nickname"
-                label="*Dein Name"
-                labelStyle="text-violet-700"
-                inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
-                type="text"
-                disabled={user}
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-            />
-            <Input
-                id="email"
-                label="*Deine E-Mail-Adresse"
-                labelStyle="text-violet-700"
-                inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
-                type="text"
-                disabled={user}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-                id="channel"
-                label="*Kanal (kann von mehreren Personen verwendet werden)"
-                labelStyle="text-violet-700"
-                inputStyle="mb-3 text-violet-900 bg-livid-100"
-                type="text"
-                value={channel}
-                onChange={(e) => setChannel(e.target.value)}
-            />
-            <div className="flex flex-wrap justify-center gap-3 mt-4">
-                <Button className="bg-violet-700 text-livid-100 w-56" onClick={submit} disabled={isLoading}>
-                    {!user ? 'Kostenlos anmelden' : 'Einstellungen speichern'}
-                </Button>
-                {user && (
-                    <Button className="text-red-500 border-red-500! w-56" onClick={deleteAccount} disabled={isLoading}>
-                        Konto löschen
+        <Card className={`relative bg-violet-400 ${className}`} size="small">
+            {isLoading && <LoaderCard />}
+            <div className={isLoading ? 'blur-xs' : ''}>
+                <h3 className="font-bold text-xl mb-4 text-violet-900">Dein Konto</h3>
+                <Input
+                    id="nickname"
+                    label="*Dein Name"
+                    labelStyle="text-violet-700"
+                    inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    type="text"
+                    disabled={user}
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                />
+                <Input
+                    id="email"
+                    label="*Deine E-Mail-Adresse"
+                    labelStyle="text-violet-700"
+                    inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    type="text"
+                    disabled={user}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <Input
+                    id="channel"
+                    label="*Kanal (kann von mehreren Personen verwendet werden)"
+                    labelStyle="text-violet-700"
+                    inputStyle="mb-3 text-violet-900 bg-livid-100"
+                    type="text"
+                    value={channel}
+                    onChange={(e) => setChannel(e.target.value)}
+                />
+                <div className="flex flex-wrap justify-center gap-3 mt-4">
+                    <Button className="bg-violet-700 text-livid-100 w-56" onClick={submit} disabled={isLoading}>
+                        {!user ? 'Kostenlos anmelden' : 'Einstellungen speichern'}
                     </Button>
-                )}
+                    {user && (
+                        <Button
+                            className="text-red-500 border-red-500! w-56"
+                            onClick={deleteAccount}
+                            disabled={isLoading}
+                        >
+                            Konto löschen
+                        </Button>
+                    )}
+                </div>
             </div>
         </Card>
     );
@@ -219,7 +226,7 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
         if (isLoading) return;
         const isMessageValid = message.length > 0;
         if (!isMessageValid) {
-            alert('Bitte gib eine Nachricht ein. Gedankenübertragung ist noch im Beta-Test 😜');
+            alert('Bitte gib eine Nachricht ein – Gedankenübertragung ist noch im Beta-Test 🙃');
             return;
         }
         setIsLoading(true);
@@ -234,18 +241,21 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     }
 
     return (
-        <Card className={`mb-6 bg-livid-700 flex flex-col items-center ${className}`}>
-            <Input
-                id="message"
-                inputStyle="mb-6 text-livid-800 bg-livid-100"
-                type="text"
-                placeholder="Enter notification message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button className="bg-red-400 text-livid-100 w-56" onClick={sendTestNotification} disabled={isLoading}>
-                Testnachricht senden
-            </Button>
+        <Card className={`relative mb-6 bg-livid-700 ${className}`}>
+            {isLoading && <LoaderCard />}
+            <div className={`flex flex-col items-center ${isLoading ? 'blur-xs' : ''}`}>
+                <Input
+                    id="message"
+                    inputStyle="mb-6 text-livid-800 bg-livid-100"
+                    type="text"
+                    placeholder="Enter notification message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                />
+                <Button className="bg-red-400 text-livid-100 w-56" onClick={sendTestNotification} disabled={isLoading}>
+                    Testnachricht senden
+                </Button>
+            </div>
         </Card>
     );
 }
@@ -330,6 +340,16 @@ function StatusCard({ data, style = 'warning', icon = 'warning', size = 'small',
                 </p>
                 <p>{data.message}</p>
             </div>
+        </Card>
+    );
+}
+
+function LoaderCard({ className }: React.HTMLAttributes<HTMLDivElement>) {
+    return (
+        <Card
+            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center z-100 text-livid-800 ${className}`}
+        >
+            <LoaderCircle className="animate-spin text-inherit" size={65} />
         </Card>
     );
 }
