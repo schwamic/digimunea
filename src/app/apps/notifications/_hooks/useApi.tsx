@@ -6,11 +6,11 @@ const URL_API_NOTIFICATIONS = '/api/notifications';
 export default function useApi() {
     const queryClient = useQueryClient();
 
-    const useUser = (userId: string | null) => {
+    const useUser = (userRef: string | null) => {
         return useQuery({
             queryKey: ['user'],
-            queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userId=${userId}`).then((res) => res.json()),
-            enabled: !!userId,
+            queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then((res) => res.json()),
+            enabled: !!userRef,
         });
     };
 
@@ -27,11 +27,11 @@ export default function useApi() {
     });
 
     const removeUser = useMutation({
-        mutationFn: (userId: string) =>
+        mutationFn: (userRef: string) =>
             fetch(`${URL_API_NOTIFICATIONS}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId }),
+                body: JSON.stringify({ userRef }),
             }).then((res) => res.json()),
         onSuccess: () => {
             queryClient.setQueryData(['user'], null);

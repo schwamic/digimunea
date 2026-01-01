@@ -13,27 +13,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  nickname  String
-  subscription Json?
-  counter   Int     @default(0)
-  channels   UsersOnChannels[]
+  createdAt     DateTime @default(now())
+  email         String   @unique
+  nickname      String
+  subscriptions Json[]   @default([])
+  counter       Int      @default(0)
+  channels      UsersOnChannels[]
 }
 
 model Channel {
-  id        String   @id @default(cuid())
   name      String   @unique
   createdAt DateTime @default(now())
   users     UsersOnChannels[]
 }
 
 model UsersOnChannels {
-  userId    String
-  channelId String
-  user      User     @relation(fields: [userId], references: [id])
-  channel   Channel  @relation(fields: [channelId], references: [id])
+  userRef    String
+  channelRef String
+  user       User    @relation(fields: [userRef], references: [email])
+  channel    Channel @relation(fields: [channelRef], references: [name])
 
-  @@id([userId, channelId])
+  @@id([userRef, channelRef])
 }

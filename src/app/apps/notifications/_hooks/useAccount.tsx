@@ -5,19 +5,19 @@ import { CreateUser } from '@src/app/api/notifications/route';
 export default function useAccount() {
     const { useUser, createUser, removeUser, updateUser } = useApi();
     const { unsubscribePushService, subscribePushService } = usePushService();
-    const [storedUserId, setStoredUserId] = useState<string | null>(null);
-    const { data: user, error, isLoading, refetch } = useUser(storedUserId);
+    const [storedUserRef, setStoredUserRef] = useState<string | null>(null);
+    const { data: user, error, isLoading, refetch } = useUser(storedUserRef);
 
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        setStoredUserId(userId);
+        const userRef = localStorage.getItem('userRef');
+        setStoredUserRef(userRef);
     }, []);
 
     useEffect(() => {
-        if (!user && storedUserId !== null) {
+        if (!user && storedUserRef !== null) {
             refetch();
         }
-    }, [storedUserId]);
+    }, [storedUserRef]);
 
     async function subscribe({ nickname, email, channels }: CreateUser) {
         const subscription = await subscribePushService();
@@ -32,23 +32,23 @@ export default function useAccount() {
         const response = await createUser.mutateAsync(userData);
         if (response.success) {
             const createdUser = response.user;
-            setStoredUserId(createdUser.id);
-            localStorage.setItem('userId', createdUser.id);
+            setStoredUserRef(createdUser.email);
+            localStorage.setItem('userRef', createdUser.email);
         }
     }
 
     async function updateChannels(channel: string) {
         await updateUser.mutateAsync({
-            id: user.id,
+            userRef: user.email,
             channels: [channel],
         });
     }
 
     async function unsubscribe() {
         await unsubscribePushService();
-        await removeUser.mutateAsync(user.id);
-        localStorage.removeItem('userId');
-        setStoredUserId(null);
+        await removeUser.mutateAsync(user.email);
+        localStorage.removeItem('userRef');
+        setStoredUserRef(null);
     }
 
     return { user, error, isLoading, updateChannels, subscribe, unsubscribe };

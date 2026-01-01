@@ -133,7 +133,7 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     const { user, subscribe, unsubscribe, updateChannels } = useAccount();
     const [nickname, setNickname] = useState(user?.nickname || '');
     const [email, setEmail] = useState(user?.email || '');
-    const [channel, setChannel] = useState(user?.channels?.[0]?.channel?.name ?? '');
+    const [channel, setChannel] = useState(user?.channels?.[0]?.channelRef ?? '');
     const [isLoading, setIsLoading] = useState(false);
 
     async function submit() {
@@ -233,8 +233,8 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
         await sendMessage.mutateAsync({
             title: 'Testnachricht',
             body: message,
-            userId: user.id,
-            channelId: user.channels[0].channelId,
+            userRef: user.email,
+            channelRef: user.channels[0].channelRef,
         });
         setMessage('');
         setIsLoading(false);
@@ -242,7 +242,7 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
     return (
         <Card className={`relative mb-6 bg-livid-700 ${className}`}>
-            {isLoading && <LoaderCard />}
+            {isLoading && <LoaderCard className="bg-livid-100/20" />}
             <div className={`flex flex-col items-center ${isLoading ? 'blur-xs' : ''}`}>
                 <Input
                     id="message"
@@ -267,11 +267,11 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
     #include <HTTPClient.h>
     #include <WiFiManager.h>  // https://github.com/tzapu/WiFiManager
 
-    char* apiUrl = "https://digimunea.de/api/notifications";
-    char* userId = "${user?.id}";
-    char* channelId = "${user?.channels?.[0]?.channelId}";
-    char* title = "Test";
-    char* body = "Testbenachrichtigung von deinem IoT-Gerät!";
+    char* apiUrl = "https://digimunea.de/api/notifications?action=send";
+    char* userRef = "${user?.email}";
+    char* channelRef = "${user?.channels?.[0]?.channelRef}";
+    char* title = "Testbenachrichtigung";
+    char* body = "Gesendet von deinem IoT-Gerät!";
 
     void setupWiFi() {}
     void sendData(float moistureVoltage, float moisturePercent, float batteryVoltage) { 
@@ -280,8 +280,8 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
             http.begin(apiUrl);
             http.addHeader("Content-Type", "application/json");
             String json = "{";
-            json += "\"userId\": \"" + String(userId) + "\",";
-            json += "\"channelId\": \"" + String(channelId) + "\",";
+            json += "\"userRef\": \"" + String(userRef) + "\",";
+            json += "\"channelRef\": \"" + String(channelRef) + "\",";
             json += "\"title\": \"" + String(title) + "\",";
             json += "\"body\": \"" + String(body) + "\",";
             int httpResponseCode = http.POST(json);
