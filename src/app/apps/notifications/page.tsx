@@ -104,7 +104,7 @@ function SetupGuide() {
         await deferredPrompt.prompt();
     };
 
-    return isStandalone ? (
+    return !isStandalone ? (
         <Card className="bg-livid-400">
             <h3 className="text-2xl font-bold mb-4">App installieren</h3>
             <p>
