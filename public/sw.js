@@ -19,6 +19,11 @@ self.addEventListener('push', function (event) {
 // Handle if push notification is clicked
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
-    const dataString = encodeURIComponent(JSON.stringify(event.notification.data));
+    const dataString = encodeURIComponent(
+        JSON.stringify({
+            metadata: event.notification.data,
+            body: event.notification.body,
+        }),
+    );
     event.waitUntil(clients.openWindow(`https://notifications.digimunea.de?source=sw&data=${dataString}`));
 });
