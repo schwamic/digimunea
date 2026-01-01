@@ -13,11 +13,9 @@ export default function NotificationsPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (!searchParams) return;
         const source = searchParams.get('source');
-        if (source !== 'sw') return;
         const dataString = searchParams.get('data');
-        if (!dataString) return;
+        if (source !== 'sw' || !dataString) return;
         const { metadata, body } = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
         const notification = {
             body: {
