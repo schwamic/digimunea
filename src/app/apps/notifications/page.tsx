@@ -1,34 +1,36 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Markdown from 'markdown-to-jsx/react';
+import { useSearchParams } from 'next/navigation';
 import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
-import Markdown from 'markdown-to-jsx/react';
 
 export default function NotificationsPage() {
     const { isGranted } = usePushService();
     const { user, isLoading } = useAccount();
     const [notification, setNotification] = useState<Notification | null>(null);
+    const searchParams = useSearchParams();
 
     useEffect(() => {
-        const query = new URLSearchParams(window.location.search);
-        const source = query.get('source');
-        if (source === 'sw') {
-            const dataString = query.get('data');
-            const { metadata, body } = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
-            setNotification({
-                body: {
-                    title: body?.title || '-',
-                    message: body?.message || '-',
-                },
-                metadata: {
-                    dateOfArrival: metadata?.dateOfArrival ? new Date(metadata.dateOfArrival).toLocaleString() : '-',
-                },
-            });
-            console.log('Data from Service Worker: ', { metadata, body });
-        }
-    }, []);
+        const source = searchParams.get('source');
+        if (source !== 'sw') return;
+        const dataString = searchParams.get('data');
+        if (!dataString) return;
+        const { metadata, body } = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+        const notification = {
+            body: {
+                title: body?.title || '-',
+                message: body?.message || '-',
+            },
+            metadata: {
+                dateOfArrival: metadata?.dateOfArrival ? new Date(metadata.dateOfArrival).toLocaleString() : '-',
+            },
+        };
+        setNotification(notification);
+        console.log('Data from Service Worker: ', notification);
+    }, [searchParams]);
 
     return (
         <div>
