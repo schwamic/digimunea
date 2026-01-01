@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Markdown from 'markdown-to-jsx/react';
-import { useSearchParams } from 'next/navigation';
 import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
-import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
+import { useAccount, useApi, usePushService, useSearchParams } from '@src/app/apps/notifications/_hooks';
 
 export default function NotificationsPage() {
     const { isGranted } = usePushService();
@@ -14,6 +13,7 @@ export default function NotificationsPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
+        if(!searchParams) return;
         const source = searchParams.get('source');
         if (source !== 'sw') return;
         const dataString = searchParams.get('data');
