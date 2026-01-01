@@ -10,6 +10,16 @@ export default function NotificationsPage() {
     const { isGranted } = usePushService();
     const { user, isLoading } = useAccount();
 
+    useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+        const source = query.get('source');
+        if (source === 'sw') {
+            const dataString = query.get('data');
+            const data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+            console.log('Data from Service Worker: ', data);
+        }
+    }, []);
+
     return (
         <div>
             <div className="mb-8 text-pretty">
