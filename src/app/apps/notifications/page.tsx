@@ -13,7 +13,7 @@ export default function NotificationsPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if(!searchParams) return;
+        if (!searchParams) return;
         const source = searchParams.get('source');
         if (source !== 'sw') return;
         const dataString = searchParams.get('data');
