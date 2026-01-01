@@ -16,17 +16,17 @@ export default function NotificationsPage() {
         const source = query.get('source');
         if (source === 'sw') {
             const dataString = query.get('data');
-            const data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+            const { metadata, body } = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
             setNotification({
                 body: {
-                    title: data?.title || '-',
-                    message: data?.message || '-',
+                    title: body?.title || '-',
+                    message: body?.message || '-',
                 },
                 metadata: {
-                    dateOfArrival: data?.dateOfArrival ? new Date(data.dateOfArrival).toLocaleString() : '-',
+                    dateOfArrival: metadata?.dateOfArrival ? new Date(metadata.dateOfArrival).toLocaleString() : '-',
                 },
             });
-            console.log('Data from Service Worker: ', data);
+            console.log('Data from Service Worker: ', { metadata, body });
         }
     }, []);
 
