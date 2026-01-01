@@ -43,12 +43,14 @@ export default function NotificationsPage() {
                 {!isLoading && user && (
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
-                            <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
+                            <h3 className="text-2xl font-bold mb-6">Benachrichtigung</h3>
                             {notification ? (
-                                <Card>
-                                    <p className="text-lg">{notification.body.title}</p>
-                                    <p className="text-lg">{notification.body.message}</p>
-                                    <p>{notification.metadata.dateOfArrival}</p>
+                                <Card className="bg-red-400 text-pretty" size="small">
+                                    <p className="text-md font-bold">{notification.body.title}</p>
+                                    <span className="text-sm font-medium mt-2">
+                                        {notification.metadata.dateOfArrival}
+                                    </span>
+                                    <p className="text-lg mt-2">{notification.body.message}</p>
                                 </Card>
                             ) : (
                                 <StatusCard
