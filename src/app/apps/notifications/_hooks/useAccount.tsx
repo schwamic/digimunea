@@ -26,9 +26,17 @@ export default function useAccount() {
         }
     }, [isError]);
 
-    function login(email: string) {
-        localStorage.setItem('userRef', email);
-        setStoredUserRef(email);
+    async function login(email: string) {
+        const subscription = await subscribePushService();
+        if (!subscription) return;
+        const response = await updateUser.mutateAsync({
+            userRef: email,
+            subscription,
+        });
+        if (response.success) {
+            localStorage.setItem('userRef', email);
+            setStoredUserRef(email);
+        }
     }
 
     async function subscribe({ nickname, email, channels }: CreateUser) {

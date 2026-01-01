@@ -65,8 +65,12 @@ class NotificationService {
     async upsertUser(data: NewUser | UpdateUser) {
         const isUpdate = 'userRef' in data;
         if (isUpdate) {
+            const currentUser = await this.getUser(data.userRef);
+            if (!currentUser) throw new Error('User not found');
             const userData = UpdateUser.parse(data);
-            const user = await prisma.user.update({
+            const isChannelUpdate = userData?.channels && userData.channels.length > 0;
+            const isSubscriptionUpdate = userData?.subscription !== undefined;
+            const updatedUser = await prisma.user.update({
                 where: { email: userData.userRef },
                 include: {
                     channels: {
@@ -76,20 +80,25 @@ class NotificationService {
                     },
                 },
                 data: {
-                    channels: {
-                        deleteMany: {},
-                        create: userData.channels.map((channelRef) => ({
-                            channel: {
-                                connectOrCreate: {
-                                    where: { name: channelRef },
-                                    create: { name: channelRef },
+                    ...(isChannelUpdate && {
+                        channels: {
+                            deleteMany: {},
+                            create: userData.channels!.map((channelRef) => ({
+                                channel: {
+                                    connectOrCreate: {
+                                        where: { name: channelRef },
+                                        create: { name: channelRef },
+                                    },
                                 },
-                            },
-                        })),
-                    },
+                            })),
+                        },
+                    }),
+                    ...(isSubscriptionUpdate && {
+                        subscriptions: [...currentUser!.subscriptions, userData.subscription] as Subscription[],
+                    }),
                 },
             });
-            return { success: true, user: user };
+            return { success: true, user: updatedUser };
         } else {
             const userData = NewUser.parse(data);
             const user = await prisma.user.create({
@@ -208,7 +217,7 @@ const Message = z.object({
 const CreateUser = z.object({
     nickname: z.string().min(2).max(20),
     email: z.email(),
-    channels: z.array(z.string()).min(1).max(20),
+    channels: z.array(z.string()).min(1).max(30),
 });
 
 const NewUser = CreateUser.extend({
@@ -217,7 +226,8 @@ const NewUser = CreateUser.extend({
 
 const UpdateUser = z.object({
     userRef: z.email(),
-    channels: z.array(z.string()).min(1).max(40),
+    channels: z.array(z.string()).min(1).max(30).optional(),
+    subscription: Subscription.optional(),
 });
 
 export type Subscription = z.infer<typeof Subscription>;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Info, Loader, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
+import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
 import Markdown from 'markdown-to-jsx/react';
@@ -165,7 +165,7 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                     return;
                 }
                 setIsLoading(true);
-                login(email);
+                await login(email);
                 setIsLoading(false);
             } else {
                 // Signup flow
