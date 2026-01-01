@@ -39,7 +39,7 @@ export default function NotificationsPage() {
                                 data={
                                     isGranted !== 'denied'
                                         ? {
-                                              title: 'Noch Funkstille',
+                                              title: 'Hier piept gerade nichts',
                                               message:
                                                   'Schicke dir eine Testnachricht oder nutze den Beispiel-Code, um dir Benachrichtigungen zu schicken.',
                                           }
