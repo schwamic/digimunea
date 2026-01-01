@@ -24,7 +24,8 @@ export default function usePushService() {
             scope: '/',
             updateViaCache: 'none',
         });
-        console.log('SW ready:', registration.active);
+        await navigator.serviceWorker.ready;
+        console.log('Service Worker ready:', registration.active);
         if (!('pushManager' in registration)) {
             console.log('Push Manager not supported in Service Worker registration.');
             setIsSupported(false);
