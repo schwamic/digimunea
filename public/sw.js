@@ -3,6 +3,7 @@ self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
         const options = {
+            title: data.title,
             body: data.body,
             icon: data.icon || '/apps/notifications/icon-192x192.png',
             badge: '/apps/notifications/badge-96x96.png',
@@ -22,7 +23,7 @@ self.addEventListener('notificationclick', function (event) {
     const dataString = encodeURIComponent(
         JSON.stringify({
             metadata: event.notification.data,
-            body: event.notification.body,
+            body: { message: event.notification.body, title: event.notification.title },
         }),
     );
     event.waitUntil(clients.openWindow(`https://notifications.digimunea.de?source=sw&data=${dataString}`));

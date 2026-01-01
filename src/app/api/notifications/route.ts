@@ -184,7 +184,7 @@ class NotificationService {
                             subscription as Subscription,
                             JSON.stringify({
                                 title: message.title,
-                                body: `${message.body} [Sender: ${user.nickname}, Channel: ${channel.name}]`,
+                                body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
                             }),
                         ),
                     ),

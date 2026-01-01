@@ -9,6 +9,7 @@ import Markdown from 'markdown-to-jsx/react';
 export default function NotificationsPage() {
     const { isGranted } = usePushService();
     const { user, isLoading } = useAccount();
+    const [notification, setNotification] = useState<Notification | null>(null);
 
     useEffect(() => {
         const query = new URLSearchParams(window.location.search);
@@ -16,6 +17,15 @@ export default function NotificationsPage() {
         if (source === 'sw') {
             const dataString = query.get('data');
             const data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+            setNotification({
+                body: {
+                    title: data?.title || '-',
+                    message: data?.message || '-',
+                },
+                metadata: {
+                    dateOfArrival: data?.dateOfArrival ? new Date(data.dateOfArrival).toLocaleString() : '-',
+                },
+            });
             console.log('Data from Service Worker: ', data);
         }
     }, []);
@@ -34,23 +44,30 @@ export default function NotificationsPage() {
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
                             <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
-                            <StatusCard
-                                icon="info"
-                                data={
-                                    isGranted !== 'denied'
-                                        ? {
-                                              title: 'Hier piept gerade nichts',
-                                              message:
-                                                  'Schicke dir eine Testnachricht oder nutze den Beispiel-Code, um dir Benachrichtigungen zu schicken.',
-                                          }
-                                        : {
-                                              title: 'Schade Marmelade',
-                                              message:
-                                                  'Du hast die Berechtigungen für Push-Benachrichtigungen in deinen Browsereinstellungen deaktiviert. Bitte aktiviere sie, um Push-Benachrichtigungen zu erhalten.',
-                                          }
-                                }
-                            />
-                            {/* TODO: List Push-Notifications */}
+                            {notification ? (
+                                <Card>
+                                    <p className="text-lg">{notification.body.title}</p>
+                                    <p className="text-lg">{notification.body.message}</p>
+                                    <p>{notification.metadata.dateOfArrival}</p>
+                                </Card>
+                            ) : (
+                                <StatusCard
+                                    icon="info"
+                                    data={
+                                        isGranted !== 'denied'
+                                            ? {
+                                                  title: 'Hier piept gerade nichts',
+                                                  message:
+                                                      'Schicke dir eine Testnachricht oder nutze den Beispiel-Code, um dir Benachrichtigungen zu schicken.',
+                                              }
+                                            : {
+                                                  title: 'Schade Marmelade',
+                                                  message:
+                                                      'Du hast die Berechtigungen für Push-Benachrichtigungen in deinen Browsereinstellungen deaktiviert. Bitte aktiviere sie, um Push-Benachrichtigungen zu erhalten.',
+                                              }
+                                    }
+                                />
+                            )}
                         </Card>
                         <Card className="bg-livid-400" size="small">
                             <h3 className="text-2xl font-bold mb-6">Dein Zugang</h3>
@@ -87,7 +104,7 @@ function SetupGuide() {
         await deferredPrompt.prompt();
     };
 
-    return !isStandalone ? (
+    return isStandalone ? (
         <Card className="bg-livid-400">
             <h3 className="text-2xl font-bold mb-4">App installieren</h3>
             <p>
@@ -421,3 +438,13 @@ type AccountSectionProps = Readonly<{
     isSetup?: boolean;
 }> &
     React.HTMLAttributes<HTMLDivElement>;
+
+type Notification = {
+    body: {
+        message: string;
+        title: string;
+    };
+    metadata: {
+        dateOfArrival: string;
+    };
+};
