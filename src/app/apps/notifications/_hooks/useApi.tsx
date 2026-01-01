@@ -9,7 +9,7 @@ export default function useApi() {
     const useUser = (userRef: string | null) => {
         return useQuery({
             queryKey: ['user'],
-            queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then((res) => res.json()),
+            queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then(handleResponse),
             enabled: !!userRef,
         });
     };
@@ -20,7 +20,7 @@ export default function useApi() {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser),
-            }).then((res) => res.json()),
+            }).then(handleResponse),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
@@ -32,7 +32,7 @@ export default function useApi() {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userRef }),
-            }).then((res) => res.json()),
+            }).then(handleResponse),
         onSuccess: () => {
             queryClient.setQueryData(['user'], null);
         },
@@ -44,7 +44,7 @@ export default function useApi() {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updateUser),
-            }).then((res) => res.json()),
+            }).then(handleResponse),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
@@ -58,8 +58,15 @@ export default function useApi() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(message),
-            }).then((res) => res.json()),
+            }).then(handleResponse),
     });
 
     return { createUser, updateUser, removeUser, useUser, sendMessage };
+}
+
+function handleResponse(res: Response) {
+    if (!res.ok) {
+        throw new Error(JSON.stringify({ status: res.status, message: res.statusText }));
+    }
+    return res.json();
 }

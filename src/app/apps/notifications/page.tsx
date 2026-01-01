@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
+import { Copy, Info, Loader, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
 import Markdown from 'markdown-to-jsx/react';
@@ -14,6 +14,11 @@ export default function NotificationsPage() {
         <div>
             <div className="mb-8 text-pretty">
                 <Header className="my-24" />
+                {isLoading && (
+                    <div className="relative h-24 w-full">
+                        <LoaderCard />
+                    </div>
+                )}
                 {!isLoading && !user && <SetupGuide />}
                 {!isLoading && user && (
                     <>
@@ -122,36 +127,56 @@ function SetupGuide() {
                         Erstellung deines Kontos stimmst du diesen Nutzungsbedingungen zu. Es werden keine weiteren
                         Daten gespeichert!
                     </p>
-                    <AccountSection />
+                    <AccountSection isSetup={true} />
                 </Card>
             )}
         </>
     );
 }
 
-function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
-    const { user, subscribe, unsubscribe, updateChannels } = useAccount();
+function AccountSection({ className, isSetup = false }: AccountSectionProps) {
+    const { user, login, subscribe, unsubscribe, updateChannels } = useAccount();
     const [nickname, setNickname] = useState(user?.nickname || '');
     const [email, setEmail] = useState(user?.email || '');
     const [channel, setChannel] = useState(user?.channels?.[0]?.channelRef ?? '');
     const [isLoading, setIsLoading] = useState(false);
+    const [isLogin, setIsLogin] = useState(false);
 
     async function submit() {
         if (isLoading) return;
         const isNicknameValid = nickname.length > 0;
         const isEmailValid = email.length > 0 && email.includes('@');
         const isChannelValid = channel.length > 0;
-        if (!isNicknameValid || !isEmailValid || !isChannelValid) {
-            alert('Ups, da stimmt noch nicht alles – schau bitte nochmal drüber 👀');
-            return;
-        }
-        setIsLoading(true);
         if (!user) {
-            await subscribe({ nickname, email, channels: [channel] });
+            if (isLogin) {
+                // Login flow
+                if (!isEmailValid) {
+                    alert('Ups, da stimmt noch nicht alles – E-Mail-Adresse bitte nochmal prüfen 👀');
+                    return;
+                }
+                setIsLoading(true);
+                login(email);
+                setIsLoading(false);
+            } else {
+                // Signup flow
+                if (!isNicknameValid || !isEmailValid || !isChannelValid) {
+                    alert('Ups, da stimmt noch nicht alles – schau bitte nochmal drüber 👀');
+                    return;
+                }
+                setIsLoading(true);
+                await subscribe({ nickname, email, channels: [channel] });
+                setIsLoading(false);
+            }
         } else {
+            // Update flow
+            if (!isChannelValid) {
+                alert('Ups, da stimmt noch nicht alles – Kanal bitte nochmal prüfen 👀');
+                return;
+            }
+            setIsLoading(true);
             await updateChannels(channel);
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
 
     async function deleteAccount() {
@@ -163,21 +188,27 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
         setIsLoading(false);
     }
 
+    function toggleSetup() {
+        setIsLogin(!isLogin);
+    }
+
     return (
         <Card className={`relative bg-violet-400 ${className}`} size="small">
             {isLoading && <LoaderCard />}
             <div className={isLoading ? 'blur-xs' : ''}>
                 <h3 className="font-bold text-xl mb-4 text-violet-900">Dein Konto</h3>
-                <Input
-                    id="nickname"
-                    label="*Dein Name"
-                    labelStyle="text-violet-700"
-                    inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    type="text"
-                    disabled={user}
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                />
+                {!isLogin && (
+                    <Input
+                        id="nickname"
+                        label="*Dein Name"
+                        labelStyle="text-violet-700"
+                        inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text"
+                        disabled={user}
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
+                    />
+                )}
                 <Input
                     id="email"
                     label="*Deine E-Mail-Adresse"
@@ -188,19 +219,26 @@ function AccountSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
-                <Input
-                    id="channel"
-                    label="*Kanal (kann von mehreren Personen verwendet werden)"
-                    labelStyle="text-violet-700"
-                    inputStyle="mb-3 text-violet-900 bg-livid-100"
-                    type="text"
-                    value={channel}
-                    onChange={(e) => setChannel(e.target.value)}
-                />
+                {!isLogin && (
+                    <Input
+                        id="channel"
+                        label="*Kanal (kann von mehreren Personen verwendet werden)"
+                        labelStyle="text-violet-700"
+                        inputStyle="mb-3 text-violet-900 bg-livid-100"
+                        type="text"
+                        value={channel}
+                        onChange={(e) => setChannel(e.target.value)}
+                    />
+                )}
                 <div className="flex flex-wrap justify-center gap-3 mt-4">
                     <Button className="bg-violet-700 text-livid-100 w-56" onClick={submit} disabled={isLoading}>
-                        {!user ? 'Kostenlos anmelden' : 'Einstellungen speichern'}
+                        {!user ? (isLogin ? 'Einloggen' : 'Konto erstellen') : 'Einstellungen speichern'}
                     </Button>
+                    {isSetup && (
+                        <Button className="text-violet-700 underline" onClick={toggleSetup} disabled={isLoading}>
+                            {!isLogin ? 'Zum Login' : 'Zur Registrierung'}
+                        </Button>
+                    )}
                     {user && (
                         <Button
                             className="text-red-500 border-red-500! w-56"
@@ -368,3 +406,8 @@ type ErrorCardProps = Readonly<{
 type BeforeInstallPromptEvent = {
     prompt(): Promise<void>;
 } & Event;
+
+type AccountSectionProps = Readonly<{
+    isSetup?: boolean;
+}> &
+    React.HTMLAttributes<HTMLDivElement>;

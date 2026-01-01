@@ -6,7 +6,7 @@ export default function useAccount() {
     const { useUser, createUser, removeUser, updateUser } = useApi();
     const { unsubscribePushService, subscribePushService } = usePushService();
     const [storedUserRef, setStoredUserRef] = useState<string | null>(null);
-    const { data: user, error, isLoading, refetch } = useUser(storedUserRef);
+    const { data: user, isError, isLoading, refetch } = useUser(storedUserRef);
 
     useEffect(() => {
         const userRef = localStorage.getItem('userRef');
@@ -18,6 +18,18 @@ export default function useAccount() {
             refetch();
         }
     }, [storedUserRef]);
+
+    useEffect(() => {
+        if (isError) {
+            localStorage.removeItem('userRef');
+            setStoredUserRef(null);
+        }
+    }, [isError]);
+
+    function login(email: string) {
+        localStorage.setItem('userRef', email);
+        setStoredUserRef(email);
+    }
 
     async function subscribe({ nickname, email, channels }: CreateUser) {
         const subscription = await subscribePushService();
@@ -51,5 +63,5 @@ export default function useAccount() {
         setStoredUserRef(null);
     }
 
-    return { user, error, isLoading, updateChannels, subscribe, unsubscribe };
+    return { user, isLoading, updateChannels, login, subscribe, unsubscribe };
 }
