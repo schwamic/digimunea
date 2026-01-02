@@ -5,23 +5,17 @@ import Markdown from 'markdown-to-jsx/react';
 import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService, useSearchParams } from '@src/app/apps/notifications/_hooks';
+import { SWNotification } from '@src/app/apps/notifications/_hooks/usePushService';
 
 export default function NotificationsPage() {
-    const { isGranted } = usePushService();
+    const { isGranted, message } = usePushService();
     const { user, isLoading } = useAccount();
-    const [notification, setNotification] = useState<Notification | null>(null);
+    const [swNotification, setSWNotification] = useState<SWNotification | null>(null);
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (!('BroadcastChannel' in window)) return;
-        const channel = new BroadcastChannel('sw-p15ns-messages');
-        channel.onmessage = (event) => {
-            handlePushData(event.data);
-        };
-        return () => {
-            channel.close();
-        };
-    }, []);
+        handlePushData(message);
+    }, [message]);
 
     useEffect(() => {
         const source = searchParams.get('source');
@@ -31,7 +25,8 @@ export default function NotificationsPage() {
         handlePushData(data);
     }, [searchParams]);
 
-    function handlePushData(data: Notification) {
+    function handlePushData(data: SWNotification | null) {
+        if (!data) return;
         const notification = {
             body: {
                 title: data?.body?.title || '-',
@@ -43,7 +38,7 @@ export default function NotificationsPage() {
                     : '-',
             },
         };
-        setNotification(notification);
+        setSWNotification(notification);
         console.log('Data from Service Worker: ', notification);
     }
 
@@ -61,13 +56,13 @@ export default function NotificationsPage() {
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
                             <h3 className="text-2xl font-bold mb-6">Benachrichtigung</h3>
-                            {notification ? (
+                            {swNotification ? (
                                 <Card className="bg-red-400 text-pretty" size="small">
-                                    <p className="text-md font-bold">{notification.body.title}</p>
+                                    <p className="text-md font-bold">{swNotification.body.title}</p>
                                     <span className="text-sm font-medium mt-2">
-                                        {notification.metadata.dateOfArrival}
+                                        {swNotification.metadata.dateOfArrival}
                                     </span>
-                                    <p className="text-lg mt-2">{notification.body.message}</p>
+                                    <p className="text-lg mt-2">{swNotification.body.message}</p>
                                 </Card>
                             ) : (
                                 <StatusCard
@@ -332,7 +327,7 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
                     id="message"
                     inputStyle="mb-6 text-livid-800 bg-livid-100"
                     type="text"
-                    placeholder="Enter notification message"
+                    placeholder="Deine Nachricht"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                 />
@@ -457,13 +452,3 @@ type AccountSectionProps = Readonly<{
     isSetup?: boolean;
 }> &
     React.HTMLAttributes<HTMLDivElement>;
-
-type Notification = {
-    body: {
-        message: string;
-        title: string;
-    };
-    metadata: {
-        dateOfArrival: string;
-    };
-};

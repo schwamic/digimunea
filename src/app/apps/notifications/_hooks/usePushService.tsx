@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 export default function usePushService() {
     const [isSupported, setIsSupported] = useState(false);
     const [isGranted, setIsGranted] = useState<NotificationPermission>('default');
+    const [message, setMessage] = useState<SWNotification | null>(null);
 
     useEffect(() => {
         const isSupported = 'serviceWorker' in navigator && 'Notification' in window;
@@ -11,6 +12,19 @@ export default function usePushService() {
             const permission = Notification.permission;
             setIsGranted(permission);
         }
+    }, []);
+
+    useEffect(() => {
+        if (!('serviceWorker' in navigator)) return;
+        const onMessage = (event: MessageEvent) => {
+            if (event?.data?.source === 'sw') {
+                setMessage(event.data.data);
+            }
+        };
+        navigator.serviceWorker.addEventListener('message', onMessage);
+        return () => {
+            navigator.serviceWorker.removeEventListener('message', onMessage);
+        };
     }, []);
 
     async function subscribePushService() {
@@ -46,7 +60,7 @@ export default function usePushService() {
         await subscription?.unsubscribe();
     }
 
-    return { isSupported, isGranted, subscribePushService, unsubscribePushService };
+    return { isSupported, isGranted, message, subscribePushService, unsubscribePushService };
 }
 
 function urlBase64ToUint8Array(base64String: string) {
@@ -59,3 +73,13 @@ function urlBase64ToUint8Array(base64String: string) {
     }
     return outputArray;
 }
+
+export type SWNotification = {
+    body: {
+        message: string;
+        title: string;
+    };
+    metadata: {
+        dateOfArrival: string;
+    };
+};

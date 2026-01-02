@@ -1,7 +1,3 @@
-// Handle incoming push notifications
-
-const channel = new BroadcastChannel('sw-p15ns-messages');
-
 self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
@@ -18,11 +14,12 @@ self.addEventListener('push', function (event) {
                 primaryKey: '2',
             },
         };
-        channel.postMessage({
-            metadata: options.data,
-            body: { message: options.body, title: options.title },
-        });
-        event.waitUntil(self.registration.showNotification(data.title, options));
+        event.waitUntil(
+            Promise.all([
+                sendMessageToClients(options.data, options.body, options.title),
+                self.registration.showNotification(data.title, options),
+            ]),
+        );
     }
 });
 
@@ -36,3 +33,19 @@ self.addEventListener('notificationclick', function (event) {
     );
     event.waitUntil(clients.openWindow(`https://notifications.digimunea.de?source=sw&data=${dataString}`));
 });
+
+async function sendMessageToClients(metadata, message, title) {
+    const allClients = await self.clients.matchAll({
+        includeUncontrolled: true,
+        type: 'window',
+    });
+    allClients.forEach((client) =>
+        client.postMessage({
+            source: 'sw',
+            data: {
+                metadata,
+                body: { message, title },
+            },
+        }),
+    );
+}
