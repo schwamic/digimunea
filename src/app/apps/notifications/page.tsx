@@ -13,22 +13,39 @@ export default function NotificationsPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
+        if (!('BroadcastChannel' in window)) return;
+        const channel = new BroadcastChannel('sw-p15ns-messages');
+        channel.onmessage = (event) => {
+            handlePushData(event.data);
+        };
+        return () => {
+            channel.close();
+        };
+    }, []);
+
+    useEffect(() => {
         const source = searchParams.get('source');
         const dataString = searchParams.get('data');
         if (source !== 'sw' || !dataString) return;
-        const { metadata, body } = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+        const data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+        handlePushData(data);
+    }, [searchParams]);
+
+    function handlePushData(data: any) {
         const notification = {
             body: {
-                title: body?.title || '-',
-                message: body?.message || '-',
+                title: data?.body?.title || '-',
+                message: data?.body?.message || '-',
             },
             metadata: {
-                dateOfArrival: metadata?.dateOfArrival ? new Date(metadata.dateOfArrival).toLocaleString() : '-',
+                dateOfArrival: data?.metadata?.dateOfArrival
+                    ? new Date(data.metadata.dateOfArrival).toLocaleString()
+                    : '-',
             },
         };
         setNotification(notification);
         console.log('Data from Service Worker: ', notification);
-    }, [searchParams]);
+    }
 
     return (
         <div>
