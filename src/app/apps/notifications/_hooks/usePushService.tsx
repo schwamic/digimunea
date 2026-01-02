@@ -21,7 +21,11 @@ export default function usePushService() {
                 setMessage(event.data.data);
             }
         };
-        navigator.serviceWorker.addEventListener('message', onMessage);
+        const setupEventListener = async () => {
+            await navigator.serviceWorker.ready;
+            navigator.serviceWorker.addEventListener('message', onMessage);
+        };
+        setupEventListener();
         return () => {
             navigator.serviceWorker.removeEventListener('message', onMessage);
         };
