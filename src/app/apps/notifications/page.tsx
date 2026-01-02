@@ -31,7 +31,7 @@ export default function NotificationsPage() {
         handlePushData(data);
     }, [searchParams]);
 
-    function handlePushData(data: any) {
+    function handlePushData(data: Notification) {
         const notification = {
             body: {
                 title: data?.body?.title || '-',
