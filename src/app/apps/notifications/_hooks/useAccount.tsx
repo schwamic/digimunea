@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useApi, usePushService } from '@src/app/apps/notifications/_hooks';
-import { CreateUser } from '@src/app/api/notifications/route';
 
 export default function useAccount() {
-    const { useUser, createUser, removeUser, updateUser } = useApi();
+    const { useUser, upsertUser, removeUser } = useApi();
     const { unsubscribePushService, subscribePushService } = usePushService();
     const [storedUserRef, setStoredUserRef] = useState<string | null>(null);
-    const { data: user, isError, isLoading, refetch } = useUser(storedUserRef);
+    const { data: user, isError, isLoading } = useUser(storedUserRef);
 
     useEffect(() => {
         const userRef = localStorage.getItem('userRef');
         setStoredUserRef(userRef);
     }, []);
-
-    useEffect(() => {
-        if (!user && storedUserRef !== null) {
-            refetch();
-        }
-    }, [storedUserRef]);
 
     useEffect(() => {
         if (isError) {
@@ -29,7 +22,7 @@ export default function useAccount() {
     async function login(email: string) {
         const subscription = await subscribePushService();
         if (!subscription) return;
-        const response = await updateUser.mutateAsync({
+        const response = await upsertUser.mutateAsync({
             userRef: email,
             subscription,
         });
@@ -39,7 +32,7 @@ export default function useAccount() {
         }
     }
 
-    async function subscribe({ nickname, email, channels }: CreateUser) {
+    async function subscribe({ nickname, email, channels }: UserFormFields) {
         const subscription = await subscribePushService();
         if (!subscription) return;
         const userData = {
@@ -49,7 +42,7 @@ export default function useAccount() {
             channels,
         };
         console.log('Creating user with data:', userData);
-        const response = await createUser.mutateAsync(userData);
+        const response = await upsertUser.mutateAsync(userData);
         if (response.success) {
             const createdUser = response.user;
             setStoredUserRef(createdUser.email);
@@ -58,7 +51,7 @@ export default function useAccount() {
     }
 
     async function updateChannels(channel: string) {
-        await updateUser.mutateAsync({
+        await upsertUser.mutateAsync({
             userRef: user.email,
             channels: [channel],
         });
@@ -73,3 +66,9 @@ export default function useAccount() {
 
     return { user, isLoading, updateChannels, login, subscribe, unsubscribe };
 }
+
+type UserFormFields = {
+    nickname: string;
+    email: string;
+    channels: string[];
+};

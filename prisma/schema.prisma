@@ -13,25 +13,45 @@ datasource db {
 }
 
 model User {
-  createdAt     DateTime @default(now())
-  email         String   @unique
+  email         String   @id
   nickname      String
-  subscriptions Json[]   @default([])
-  counter       Int      @default(0)
+  createdAt     DateTime @default(now())
+  subscriptions Subscription[]
   channels      UsersOnChannels[]
+  notifications Notification[]
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  data      Json
+  counter   Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userRef], references: [email])
+  userRef   String
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  author    String
+  channel   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userRef], references: [email])
+  userRef   String
 }
 
 model Channel {
-  name      String   @unique
+  name      String   @id
   createdAt DateTime @default(now())
   users     UsersOnChannels[]
 }
 
 model UsersOnChannels {
-  userRef    String
-  channelRef String
   user       User    @relation(fields: [userRef], references: [email])
   channel    Channel @relation(fields: [channelRef], references: [name])
+  userRef    String
+  channelRef String
 
   @@id([userRef, channelRef])
 }

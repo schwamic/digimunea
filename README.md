@@ -31,7 +31,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 2. Apply migrations
    Run the following command to create and apply a migration: `npx prisma migrate dev --name init`
 
-3. Manage data
+3. Update Prisma Client
+   Run the following command to create a new prisma client with updated types: `npx prisma generate`
+
+4. Manage data
    View and edit your data locally by running this command: `npx prisma studio`
 
 ## Docs

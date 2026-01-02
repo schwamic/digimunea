@@ -72,13 +72,6 @@ class NotificationService {
             const isSubscriptionUpdate = userData?.subscription !== undefined;
             const updatedUser = await prisma.user.update({
                 where: { email: userData.userRef },
-                include: {
-                    channels: {
-                        include: {
-                            channel: true,
-                        },
-                    },
-                },
                 data: {
                     ...(isChannelUpdate && {
                         channels: {
@@ -94,7 +87,11 @@ class NotificationService {
                         },
                     }),
                     ...(isSubscriptionUpdate && {
-                        subscriptions: [...currentUser!.subscriptions, userData.subscription] as Subscription[],
+                        subscriptions: {
+                            create: {
+                                data: userData.subscription as Subscription,
+                            },
+                        },
                     }),
                 },
             });
@@ -102,17 +99,14 @@ class NotificationService {
         } else {
             const userData = NewUser.parse(data);
             const user = await prisma.user.create({
-                include: {
-                    channels: {
-                        include: {
-                            channel: true,
-                        },
-                    },
-                },
                 data: {
                     nickname: userData.nickname,
                     email: userData.email,
-                    subscriptions: [userData.subscription],
+                    subscriptions: {
+                        create: {
+                            data: userData.subscription as Subscription,
+                        },
+                    },
                     channels: {
                         create: userData.channels.map((channelRef) => ({
                             channel: {
@@ -139,6 +133,10 @@ class NotificationService {
                         channel: true,
                     },
                 },
+                notifications: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 5,
+                },
             },
         });
         return user;
@@ -156,14 +154,19 @@ class NotificationService {
         return { success: true };
     }
 
-    async sendNotification(message: Message) {
+    async sendNotification(message: UserMessage) {
         const user = await prisma.user.findUnique({ where: { email: message.userRef } });
         const channel = await prisma.channel.findUnique({
             where: { name: message.channelRef },
             include: {
                 users: {
                     include: {
-                        user: true,
+                        user: {
+                            include: {
+                                subscriptions: true,
+                                email: true,
+                            },
+                        },
                     },
                 },
             },
@@ -172,6 +175,31 @@ class NotificationService {
             throw new Error('Message could not be send: Missing user or channel.');
         }
         try {
+            await Promise.allSettled([
+                channel.users.map(({ user: channelUser }: ChannelUser) =>
+                    prisma.user.update({
+                        where: { email: channelUser.email },
+                        data: {
+                            notifications: {
+                                create: {
+                                    title: message.title,
+                                    body: message.body,
+                                    author: user.nickname,
+                                    channel: channel.name,
+                                },
+                            },
+                            subscriptions: {
+                                updateMany: {
+                                    where: {},
+                                    data: {
+                                        counter: { increment: 1 },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ]);
             webpush.setVapidDetails(
                 'https://digimunea.de',
                 process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
@@ -181,7 +209,7 @@ class NotificationService {
                 channel.users.flatMap(({ user: channelUser }: ChannelUser) =>
                     channelUser.subscriptions.map((subscription) =>
                         webpush.sendNotification(
-                            subscription as Subscription,
+                            subscription.data as Subscription,
                             JSON.stringify({
                                 title: message.title,
                                 body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
@@ -214,25 +242,22 @@ const Message = z.object({
     body: z.string().min(1).max(500),
 });
 
-const CreateUser = z.object({
-    nickname: z.string().min(2).max(20),
-    email: z.email(),
-    channels: z.array(z.string()).min(1).max(30),
-});
-
-const NewUser = CreateUser.extend({
-    subscription: Subscription,
-});
-
 const UpdateUser = z.object({
     userRef: z.email(),
     channels: z.array(z.string()).min(1).max(30).optional(),
     subscription: Subscription.optional(),
 });
 
+const NewUser = z.object({
+    nickname: z.string().min(2).max(20),
+    email: z.email(),
+    channels: z.array(z.string()).min(1).max(30),
+    subscription: Subscription,
+});
+
+type ChannelUser = { user: Prisma.UserGetPayload<{ select: { subscriptions: true; email: true } }> };
 export type Subscription = z.infer<typeof Subscription>;
-export type Message = z.infer<typeof Message>;
 export type NewUser = z.infer<typeof NewUser>;
-export type CreateUser = z.infer<typeof CreateUser>;
 export type UpdateUser = z.infer<typeof UpdateUser>;
-type ChannelUser = { user: Prisma.UserGetPayload<{ select: { subscriptions: true; nickname: true } }> };
+export type UserMessage = z.infer<typeof Message>;
+export type UserNotification = Prisma.NotificationGetPayload<object>;

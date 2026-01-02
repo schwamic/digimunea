@@ -1,4 +1,4 @@
-import { NewUser, Message, UpdateUser } from '@src/app/api/notifications/route';
+import { NewUser, UserMessage, UpdateUser } from '@src/app/api/notifications/route';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const URL_API_NOTIFICATIONS = '/api/notifications';
@@ -11,11 +11,12 @@ export default function useApi() {
             queryKey: ['user'],
             queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then(handleResponse),
             enabled: !!userRef,
+            refetchInterval: 1000, // Refetch every second to get real-time updates
         });
     };
 
-    const createUser = useMutation({
-        mutationFn: (newUser: NewUser) =>
+    const upsertUser = useMutation({
+        mutationFn: (newUser: NewUser | UpdateUser) =>
             fetch(URL_API_NOTIFICATIONS, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -38,20 +39,8 @@ export default function useApi() {
         },
     });
 
-    const updateUser = useMutation({
-        mutationFn: (updateUser: UpdateUser) =>
-            fetch(URL_API_NOTIFICATIONS, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateUser),
-            }).then(handleResponse),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user'] });
-        },
-    });
-
     const sendMessage = useMutation({
-        mutationFn: (message: Message) =>
+        mutationFn: (message: UserMessage) =>
             fetch(`${URL_API_NOTIFICATIONS}?action=send`, {
                 method: 'POST',
                 headers: {
@@ -61,7 +50,7 @@ export default function useApi() {
             }).then(handleResponse),
     });
 
-    return { createUser, updateUser, removeUser, useUser, sendMessage };
+    return { upsertUser, removeUser, useUser, sendMessage };
 }
 
 function handleResponse(res: Response) {

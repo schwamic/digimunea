@@ -4,43 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Markdown from 'markdown-to-jsx/react';
 import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
-import { useAccount, useApi, usePushService, useSearchParams } from '@src/app/apps/notifications/_hooks';
+import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
 import { SWNotification } from '@src/app/apps/notifications/_hooks/usePushService';
+import { UserNotification } from '@src/app/api/notifications/route';
 
 export default function NotificationsPage() {
-    const { isGranted, message } = usePushService();
+    const { isGranted } = usePushService();
     const { user, isLoading } = useAccount();
-    const [swNotification, setSWNotification] = useState<SWNotification | null>(null);
-    const searchParams = useSearchParams();
-
-    useEffect(() => {
-        handlePushData(message);
-    }, [message]);
-
-    useEffect(() => {
-        const source = searchParams.get('source');
-        const dataString = searchParams.get('data');
-        if (source !== 'sw' || !dataString) return;
-        const data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
-        handlePushData(data);
-    }, [searchParams]);
-
-    function handlePushData(data: SWNotification | null) {
-        if (!data) return;
-        const notification = {
-            body: {
-                title: data?.body?.title || '-',
-                message: data?.body?.message || '-',
-            },
-            metadata: {
-                dateOfArrival: data?.metadata?.dateOfArrival
-                    ? new Date(data.metadata.dateOfArrival).toLocaleString()
-                    : '-',
-            },
-        };
-        setSWNotification(notification);
-        console.log('Data from Service Worker: ', notification);
-    }
 
     return (
         <div>
@@ -56,14 +26,18 @@ export default function NotificationsPage() {
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
                             <h3 className="text-2xl font-bold mb-6">Benachrichtigung</h3>
-                            {swNotification ? (
-                                <Card className="bg-red-400 text-pretty" size="small">
-                                    <p className="text-md font-bold">{swNotification.body.title}</p>
-                                    <span className="text-sm font-medium mt-2">
-                                        {swNotification.metadata.dateOfArrival}
-                                    </span>
-                                    <p className="text-lg mt-2">{swNotification.body.message}</p>
-                                </Card>
+                            {user.notifications.length > 0 ? (
+                                <div className="flex flex-col gap-4">
+                                    {user.notifications.map((notification: UserNotification, idx: number) => (
+                                        <Card key={idx} className="bg-red-400 text-pretty" size="small">
+                                            <p className="text-md font-bold">{notification.title}</p>
+                                            <span className="text-xs font-medium mt-2">
+                                                {`Von: ${notification.author} / Kanal: ${notification.channel} / Datum: ${notification.createdAt.toLocaleDateString('de-DE')}`}
+                                            </span>
+                                            <p className="text-lg mt-2">{notification.body}</p>
+                                        </Card>
+                                    ))}
+                                </div>
                             ) : (
                                 <StatusCard
                                     icon="info"

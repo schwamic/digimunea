@@ -14,38 +14,11 @@ self.addEventListener('push', function (event) {
                 primaryKey: '2',
             },
         };
-        event.waitUntil(
-            Promise.all([
-                sendMessageToClients(options.data, options.body, options.title),
-                self.registration.showNotification(data.title, options),
-            ]),
-        );
+        event.waitUntil(self.registration.showNotification(data.title, options));
     }
 });
 
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
-    const dataString = encodeURIComponent(
-        JSON.stringify({
-            metadata: event.notification.data,
-            body: { message: event.notification.body, title: event.notification.title },
-        }),
-    );
-    event.waitUntil(clients.openWindow(`https://notifications.digimunea.de?source=sw&data=${dataString}`));
+    event.waitUntil(clients.openWindow('https://notifications.digimunea.de'));
 });
-
-async function sendMessageToClients(metadata, message, title) {
-    const allClients = await self.clients.matchAll({
-        includeUncontrolled: true,
-        type: 'window',
-    });
-    allClients.forEach((client) =>
-        client.postMessage({
-            source: 'sw',
-            data: {
-                metadata,
-                body: { message, title },
-            },
-        }),
-    );
-}
