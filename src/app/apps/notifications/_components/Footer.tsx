@@ -8,7 +8,7 @@ export default function Footer() {
                 href="https://github.com/schwamic/digimunea/tree/main/src/app/apps"
                 target="_blank"
             >
-                P15Ns (v0.1.4) on Github <Github className="inline ml-1" />
+                P15Ns (v0.1.5) on Github <Github className="inline ml-1" />
             </a>
         </footer>
     );
