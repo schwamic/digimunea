@@ -147,6 +147,12 @@ class NotificationService {
             prisma.usersOnChannels.deleteMany({
                 where: { userRef },
             }),
+            prisma.notification.deleteMany({
+                where: { userRef },
+            }),
+            prisma.subscription.deleteMany({
+                where: { userRef },
+            }),
             prisma.user.delete({
                 where: { email: userRef },
             }),
