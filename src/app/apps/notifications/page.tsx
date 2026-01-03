@@ -24,7 +24,7 @@ export default function NotificationsPage() {
                 {!isLoading && user && (
                     <>
                         <Card className="bg-livid-400 mb-6" size="small">
-                            <h3 className="text-2xl font-bold mb-6">Benachrichtigung</h3>
+                            <h3 className="text-2xl font-bold mb-6">Benachrichtigungen</h3>
                             {user.notifications.length > 0 ? (
                                 <div className="flex flex-col gap-4">
                                     {user.notifications.map((notification: UserNotification, idx: number) => (
