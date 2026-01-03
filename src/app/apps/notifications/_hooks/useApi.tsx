@@ -11,7 +11,7 @@ export default function useApi() {
             queryKey: ['user'],
             queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then(handleResponse),
             enabled: !!userRef,
-            refetchInterval: 1000, // Refetch every second to get real-time updates
+            refetchInterval: 2000,
         });
     };
 

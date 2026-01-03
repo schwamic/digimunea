@@ -29,11 +29,11 @@ export default function NotificationsPage() {
                                 <div className="flex flex-col gap-4">
                                     {user.notifications.map((notification: UserNotification, idx: number) => (
                                         <Card key={idx} className="bg-red-400 text-pretty" size="small">
-                                            <p className="text-md font-bold">{notification.title}</p>
-                                            <span className="text-xs font-medium mt-2">
-                                                {`Von: ${notification.author} / Kanal: ${notification.channel} / Datum: ${notification.createdAt.toLocaleDateString('de-DE')}`}
-                                            </span>
-                                            <p className="text-lg mt-2">{notification.body}</p>
+                                            <p className="text-lg font-bold">{notification.title}</p>
+                                            <p className="text-lg">{notification.body}</p>
+                                            <div className="text-xs font-medium text-right -mb-2">
+                                                {`Von: ${notification?.author} / Kanal: ${notification?.channel} / Datum: ${new Date(notification?.createdAt)?.toLocaleString('de-DE')}`}
+                                            </div>
                                         </Card>
                                     ))}
                                 </div>

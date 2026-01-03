@@ -174,7 +174,7 @@ class NotificationService {
             throw new Error('Message could not be send: Missing user or channel.');
         }
         try {
-            await Promise.allSettled([
+            await Promise.allSettled(
                 channel.users.map(({ user: channelUser }: ChannelUser) =>
                     prisma.user.update({
                         where: { email: channelUser.email },
@@ -198,7 +198,7 @@ class NotificationService {
                         },
                     }),
                 ),
-            ]);
+            );
             webpush.setVapidDetails(
                 'https://digimunea.de',
                 process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
