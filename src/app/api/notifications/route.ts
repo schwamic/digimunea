@@ -164,7 +164,6 @@ class NotificationService {
                         user: {
                             include: {
                                 subscriptions: true,
-                                email: true,
                             },
                         },
                     },

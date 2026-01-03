@@ -59,13 +59,3 @@ function urlBase64ToUint8Array(base64String: string) {
     }
     return outputArray;
 }
-
-export type SWNotification = {
-    body: {
-        message: string;
-        title: string;
-    };
-    metadata: {
-        dateOfArrival: string;
-    };
-};

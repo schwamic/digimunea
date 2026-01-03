@@ -5,7 +5,6 @@ import Markdown from 'markdown-to-jsx/react';
 import { Copy, Info, LoaderCircle, Plus, Share, TriangleAlert } from 'lucide-react';
 import { Button, Input, Header, Card } from '@src/app/apps/notifications/_components';
 import { useAccount, useApi, usePushService } from '@src/app/apps/notifications/_hooks';
-import { SWNotification } from '@src/app/apps/notifications/_hooks/usePushService';
 import { UserNotification } from '@src/app/api/notifications/route';
 
 export default function NotificationsPage() {
