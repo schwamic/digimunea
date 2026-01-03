@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
     try {
         const data = await request.json();
-        if (data?.userRef) throw new Error('Missing userRef parameter');
+        if (!data?.userRef) throw new Error('Missing userRef parameter');
         const service = new NotificationService();
         const response = await service.removeUser(data.userRef);
         return NextResponse.json(response, { status: 200 });

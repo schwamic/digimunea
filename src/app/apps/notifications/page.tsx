@@ -91,7 +91,7 @@ function SetupGuide() {
         await deferredPrompt.prompt();
     };
 
-    return !isStandalone ? (
+    return isStandalone ? (
         <Card className="bg-livid-400">
             <h3 className="text-2xl font-bold mb-4">App installieren</h3>
             <p>
@@ -171,7 +171,6 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                     }
                     setIsLoading(true);
                     await login(email);
-                    setIsLoading(false);
                 } else {
                     // Signup flow
                     if (!isNicknameValid || !isEmailValid || !isChannelValid) {
@@ -180,7 +179,6 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                     }
                     setIsLoading(true);
                     await subscribe({ nickname, email, channels: [channel] });
-                    setIsLoading(false);
                 }
             } else {
                 // Update flow
@@ -190,9 +188,10 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                 }
                 setIsLoading(true);
                 await updateChannels(channel);
-                setIsLoading(false);
             }
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
             alert('Oje… es ist ein Fehler aufgetreten. Ein zweiter Versuch könnte helfen 🔁');
             console.error('Submit error:', error);
         }
@@ -202,9 +201,15 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
         if (isLoading) return;
         const confirm = window.confirm('Konto löschen? Dramatische Musik setzt ein 🎻');
         if (!confirm) return;
-        setIsLoading(true);
-        await unsubscribe();
-        setIsLoading(false);
+        try {
+            setIsLoading(true);
+            await unsubscribe();
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            alert('Oje… es ist ein Fehler aufgetreten. Ein zweiter Versuch könnte helfen 🔁');
+            console.error('Delete account error:', error);
+        }
     }
 
     function toggleSetup() {
