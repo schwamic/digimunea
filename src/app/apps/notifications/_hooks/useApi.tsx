@@ -44,6 +44,7 @@ export default function useApi() {
         },
         onSuccess: () => {
             queryClient.setQueryData(['user'], null);
+            queryClient.clear();
         },
     });
 
