@@ -22,14 +22,12 @@ export default function useAccount() {
     async function login(email: string) {
         const subscription = await subscribePushService();
         if (!subscription) return;
-        const response = await upsertUser.mutateAsync({
+        await upsertUser.mutateAsync({
             userRef: email,
             subscription,
         });
-        if (response.success) {
-            localStorage.setItem('userRef', email);
-            setStoredUserRef(email);
-        }
+        localStorage.setItem('userRef', email);
+        setStoredUserRef(email);
     }
 
     async function subscribe({ nickname, email, channels }: UserFormFields) {
@@ -41,25 +39,22 @@ export default function useAccount() {
             subscription,
             channels,
         };
-        console.log('Creating user with data:', userData);
         const response = await upsertUser.mutateAsync(userData);
-        if (response.success) {
-            const createdUser = response.user;
-            setStoredUserRef(createdUser.email);
-            localStorage.setItem('userRef', createdUser.email);
-        }
+        const createdUser = response.user;
+        setStoredUserRef(createdUser!.email);
+        localStorage.setItem('userRef', createdUser!.email);
     }
 
     async function updateChannels(channel: string) {
         await upsertUser.mutateAsync({
-            userRef: user.email,
+            userRef: user!.email,
             channels: [channel],
         });
     }
 
     async function unsubscribe() {
         await unsubscribePushService();
-        await removeUser.mutateAsync(user.email);
+        await removeUser.mutateAsync(user!.email);
         localStorage.removeItem('userRef');
         setStoredUserRef(null);
     }

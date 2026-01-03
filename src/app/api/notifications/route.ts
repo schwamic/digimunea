@@ -4,10 +4,22 @@ import * as z from 'zod';
 import prisma from '@src/lib/server/prisma';
 import { Prisma } from '@prisma/client';
 
-export async function PUT(request: NextRequest) {
-    const data: NewUser | UpdateUser = await request.json();
-    const service = new NotificationService();
+export async function GET(request: NextRequest) {
     try {
+        const userRef = request.nextUrl.searchParams.get('userRef');
+        if (!userRef) throw new Error('Missing userRef parameter');
+        const service = new NotificationService();
+        const response = await service.getUser(userRef);
+        return NextResponse.json(response, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: `Failed to get user: ${error}` }, { status: 400 });
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    try {
+        const data: NewUser | UpdateUser = await request.json();
+        const service = new NotificationService();
         const response = await service.upsertUser(data);
         return NextResponse.json(response, { status: 200 });
     } catch (error) {
@@ -40,20 +52,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-    const data = await request.json();
-    const service = new NotificationService();
-    const response = await service.removeUser(data?.userRef);
-    return NextResponse.json(response, { status: 200 });
-}
-
-export async function GET(request: NextRequest) {
-    const userRef = request.nextUrl.searchParams.get('userRef');
-    const service = new NotificationService();
-    const response = await service.getUser(userRef);
-    if (!response) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    } else {
+    try {
+        const data = await request.json();
+        if (data?.userRef) throw new Error('Missing userRef parameter');
+        const service = new NotificationService();
+        const response = await service.removeUser(data.userRef);
         return NextResponse.json(response, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: `Failed to delete user: ${error}` }, { status: 400 });
     }
 }
 
@@ -123,8 +129,7 @@ class NotificationService {
         }
     }
 
-    async getUser(userRef: string | null) {
-        if (!userRef) return null;
+    async getUser(userRef: string) {
         const user = await prisma.user.findUnique({
             where: { email: userRef },
             include: {
@@ -139,7 +144,8 @@ class NotificationService {
                 },
             },
         });
-        return user;
+        if (!user) throw new Error('User not found');
+        return { success: true, user: user };
     }
 
     async removeUser(userRef: string) {
@@ -179,55 +185,50 @@ class NotificationService {
         if (!user || !channel) {
             throw new Error('Message could not be send: Missing user or channel.');
         }
-        try {
-            await Promise.allSettled(
-                channel.users.map(({ user: channelUser }: ChannelUser) =>
-                    prisma.user.update({
-                        where: { email: channelUser.email },
-                        data: {
-                            notifications: {
-                                create: {
-                                    title: message.title,
-                                    body: message.body,
-                                    author: user.nickname,
-                                    channel: channel.name,
-                                },
+        await Promise.allSettled(
+            channel.users.map(({ user: channelUser }) =>
+                prisma.user.update({
+                    where: { email: channelUser.email },
+                    data: {
+                        notifications: {
+                            create: {
+                                title: message.title,
+                                body: message.body,
+                                author: user.nickname,
+                                channel: channel.name,
                             },
-                            subscriptions: {
-                                updateMany: {
-                                    where: {},
-                                    data: {
-                                        counter: { increment: 1 },
-                                    },
+                        },
+                        subscriptions: {
+                            updateMany: {
+                                where: {},
+                                data: {
+                                    counter: { increment: 1 },
                                 },
                             },
                         },
-                    }),
-                ),
-            );
-            webpush.setVapidDetails(
-                'https://digimunea.de',
-                process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-                process.env.VAPID_PRIVATE_KEY!,
-            );
-            await Promise.allSettled(
-                channel.users.flatMap(({ user: channelUser }: ChannelUser) =>
-                    channelUser.subscriptions.map((subscription) =>
-                        webpush.sendNotification(
-                            subscription.data as Subscription,
-                            JSON.stringify({
-                                title: message.title,
-                                body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
-                            }),
-                        ),
+                    },
+                }),
+            ),
+        );
+        webpush.setVapidDetails(
+            'https://digimunea.de',
+            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+            process.env.VAPID_PRIVATE_KEY!,
+        );
+        await Promise.allSettled(
+            channel.users.flatMap(({ user: channelUser }) =>
+                channelUser.subscriptions.map((subscription) =>
+                    webpush.sendNotification(
+                        subscription.data as Subscription,
+                        JSON.stringify({
+                            title: message.title,
+                            body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
+                        }),
                     ),
                 ),
-            );
-            return { success: true };
-        } catch (error) {
-            console.error('Error sending push notification:', error);
-            return { success: false, error: 'Failed to send notification' };
-        }
+            ),
+        );
+        return { success: true };
     }
 }
 
@@ -260,9 +261,10 @@ const NewUser = z.object({
     subscription: Subscription,
 });
 
-type ChannelUser = { user: Prisma.UserGetPayload<{ select: { subscriptions: true; email: true } }> };
 export type Subscription = z.infer<typeof Subscription>;
 export type NewUser = z.infer<typeof NewUser>;
 export type UpdateUser = z.infer<typeof UpdateUser>;
 export type UserMessage = z.infer<typeof Message>;
 export type UserNotification = Prisma.NotificationGetPayload<object>;
+export type FullUser = Prisma.UserGetPayload<{ include: { channels: true; notifications: true } }>;
+export type User = Prisma.UserGetPayload<object>;

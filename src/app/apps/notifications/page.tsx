@@ -161,35 +161,40 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
         const isNicknameValid = nickname.length > 0;
         const isEmailValid = email.length > 0 && email.includes('@');
         const isChannelValid = channel.length > 0;
-        if (!user) {
-            if (isLogin) {
-                // Login flow
-                if (!isEmailValid) {
-                    alert('Ups, da stimmt noch nicht alles – E-Mail-Adresse bitte nochmal prüfen 👀');
-                    return;
+        try {
+            if (!user) {
+                if (isLogin) {
+                    // Login flow
+                    if (!isEmailValid) {
+                        alert('Ups, da stimmt noch nicht alles – E-Mail-Adresse bitte nochmal prüfen 👀');
+                        return;
+                    }
+                    setIsLoading(true);
+                    await login(email);
+                    setIsLoading(false);
+                } else {
+                    // Signup flow
+                    if (!isNicknameValid || !isEmailValid || !isChannelValid) {
+                        alert('Ups, da stimmt noch nicht alles – schau bitte nochmal drüber 👀');
+                        return;
+                    }
+                    setIsLoading(true);
+                    await subscribe({ nickname, email, channels: [channel] });
+                    setIsLoading(false);
                 }
-                setIsLoading(true);
-                await login(email);
-                setIsLoading(false);
             } else {
-                // Signup flow
-                if (!isNicknameValid || !isEmailValid || !isChannelValid) {
-                    alert('Ups, da stimmt noch nicht alles – schau bitte nochmal drüber 👀');
+                // Update flow
+                if (!isChannelValid) {
+                    alert('Ups, da stimmt noch nicht alles – Kanal bitte nochmal prüfen 👀');
                     return;
                 }
                 setIsLoading(true);
-                await subscribe({ nickname, email, channels: [channel] });
+                await updateChannels(channel);
                 setIsLoading(false);
             }
-        } else {
-            // Update flow
-            if (!isChannelValid) {
-                alert('Ups, da stimmt noch nicht alles – Kanal bitte nochmal prüfen 👀');
-                return;
-            }
-            setIsLoading(true);
-            await updateChannels(channel);
-            setIsLoading(false);
+        } catch (error) {
+            alert('Oje… es ist ein Fehler aufgetreten. Ein zweiter Versuch könnte helfen 🔁');
+            console.error('Submit error:', error);
         }
     }
 
@@ -218,7 +223,7 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                         labelStyle="text-violet-700"
                         inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
                         type="text"
-                        disabled={user}
+                        disabled={!!user}
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
                     />
@@ -229,7 +234,7 @@ function AccountSection({ className, isSetup = false }: AccountSectionProps) {
                     labelStyle="text-violet-700"
                     inputStyle="mb-3 text-violet-900 bg-livid-100 disabled:cursor-not-allowed disabled:opacity-50"
                     type="text"
-                    disabled={user}
+                    disabled={!!user}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
@@ -282,12 +287,17 @@ function TestingSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
             return;
         }
         setIsLoading(true);
-        await sendMessage.mutateAsync({
-            title: 'Testnachricht',
-            body: message,
-            userRef: user.email,
-            channelRef: user.channels[0].channelRef,
-        });
+        try {
+            await sendMessage.mutateAsync({
+                title: 'Testnachricht',
+                body: message,
+                userRef: user!.email,
+                channelRef: user!.channels[0].channelRef,
+            });
+        } catch (error) {
+            alert('Ups! Fehler beim Senden. Ein zweiter Versuch könnte helfen 🔁');
+            console.error('Send message error:', error);
+        }
         setMessage('');
         setIsLoading(false);
     }
@@ -351,7 +361,7 @@ function SampleSection({ className }: React.HTMLAttributes<HTMLDivElement>) {
             alert('Kopiert & einsatzbereit 🚀');
         } catch (error) {
             alert('Oje… Kopieren fehlgeschlagen 😅');
-            console.error('Fehler beim Kopieren des Codes:', error);
+            console.error('Copy error:', error);
         }
     };
 

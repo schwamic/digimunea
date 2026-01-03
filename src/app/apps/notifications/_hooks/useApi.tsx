@@ -1,4 +1,4 @@
-import { NewUser, UserMessage, UpdateUser } from '@src/app/api/notifications/route';
+import { NewUser, UserMessage, UpdateUser, FullUser, User } from '@src/app/api/notifications/route';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const URL_API_NOTIFICATIONS = '/api/notifications';
@@ -9,53 +9,68 @@ export default function useApi() {
     const useUser = (userRef: string | null) => {
         return useQuery({
             queryKey: ['user'],
-            queryFn: () => fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`).then(handleResponse),
+            queryFn: async () => {
+                const res = await fetch(`${URL_API_NOTIFICATIONS}?userRef=${userRef}`);
+                const data = await handleResponse(res);
+                return data.user as FullUser;
+            },
             enabled: !!userRef,
             refetchInterval: 2000,
         });
     };
 
     const upsertUser = useMutation({
-        mutationFn: (newUser: NewUser | UpdateUser) =>
-            fetch(URL_API_NOTIFICATIONS, {
+        mutationFn: async (newUser: NewUser | UpdateUser) => {
+            const res = await fetch(URL_API_NOTIFICATIONS, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser),
-            }).then(handleResponse),
+            });
+            return handleResponse(res);
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
     });
 
     const removeUser = useMutation({
-        mutationFn: (userRef: string) =>
-            fetch(`${URL_API_NOTIFICATIONS}`, {
+        mutationFn: async (userRef: string) => {
+            const res = await fetch(`${URL_API_NOTIFICATIONS}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userRef }),
-            }).then(handleResponse),
+            });
+            return handleResponse(res);
+        },
         onSuccess: () => {
             queryClient.setQueryData(['user'], null);
         },
     });
 
     const sendMessage = useMutation({
-        mutationFn: (message: UserMessage) =>
-            fetch(`${URL_API_NOTIFICATIONS}?action=send`, {
+        mutationFn: async (message: UserMessage) => {
+            const res = await fetch(`${URL_API_NOTIFICATIONS}?action=send`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(message),
-            }).then(handleResponse),
+            });
+            return handleResponse(res);
+        },
     });
 
     return { upsertUser, removeUser, useUser, sendMessage };
 }
 
-function handleResponse(res: Response) {
+function handleResponse(res: Response): Promise<ResponseData> {
     if (!res.ok) {
         throw new Error(JSON.stringify({ status: res.status, message: res.statusText }));
     }
     return res.json();
 }
+
+type ResponseData = {
+    success: boolean;
+    user?: FullUser | User;
+};
