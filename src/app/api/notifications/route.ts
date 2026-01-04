@@ -185,6 +185,7 @@ class NotificationService {
         if (!user || !channel) {
             throw new Error('Message could not be send: Missing user or channel.');
         }
+        // Store notifications
         await Promise.allSettled(
             channel.users.map(({ user: channelUser }) =>
                 prisma.user.update({
@@ -210,23 +211,40 @@ class NotificationService {
                 }),
             ),
         );
+        // Try to send Web Push Notifications
         webpush.setVapidDetails(
             'https://digimunea.de',
             process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
             process.env.VAPID_PRIVATE_KEY!,
         );
-        await Promise.allSettled(
-            channel.users.flatMap(({ user: channelUser }) =>
-                channelUser.subscriptions.map((subscription) =>
-                    webpush.sendNotification(
-                        subscription.data as Subscription,
-                        JSON.stringify({
-                            title: message.title,
-                            body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
-                        }),
-                    ),
+        const subscriptions = channel.users.flatMap(({ user: channelUser }) => channelUser.subscriptions);
+        const sendResults = await Promise.allSettled(
+            subscriptions.map((subscription) =>
+                webpush.sendNotification(
+                    subscription.data as Subscription,
+                    JSON.stringify({
+                        title: message.title,
+                        body: `${message.body} [Von: ${user.nickname}, Kanal: ${channel.name}]`,
+                    }),
                 ),
             ),
+        );
+        // Cleanup dead subscriptions
+        await Promise.allSettled(
+            sendResults
+                .map((result, index) => ({ result, subscription: subscriptions[index] }))
+                .filter(
+                    ({ result }) =>
+                        result.status === 'rejected' &&
+                        (result?.reason?.body?.includes('InvalidRegistration') ||
+                            result?.reason?.statusCode === 404 ||
+                            result?.reason?.statusCode === 410),
+                )
+                .map(({ subscription }) =>
+                    prisma.subscription.delete({
+                        where: { id: subscription.id },
+                    }),
+                ),
         );
         return { success: true };
     }
