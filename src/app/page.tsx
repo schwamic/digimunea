@@ -1,11 +1,11 @@
 'use client';
 
-import { useTextAnimation } from '@src/app/home/_hooks/useTextAnimation';
-import Header from '@src/app/home/_components/Header';
-import ServiceCard from '@src/app/home/_components/ServiceCard';
-import Text from '@src/app/home/_components/Text';
-import Card from '@src/app/home/_components/Card';
-import PixelBoxIcon from '@src/app/_assets/PixelBoxIcon';
+import { useTextAnimation } from './_hooks/useTextAnimation';
+import Header from '@src/_components/Header';
+import ServiceCard from '@src/_components/ServiceCard';
+import Text from '@src/_components/Text';
+import Card from '@src/_components/Card';
+import PixelBoxIcon from '@src/_assets/PixelBoxIcon';
 
 export default function Main() {
     const title = useTextAnimation(content.header.frames);
@@ -45,10 +45,12 @@ const content = {
     intro: [
         [
             {
-                text: 'Ich bin Softwareentwickler und Researcher. Aktuell arbeite ich als Open Source Developer & Analyst bei ',
+                text: 'Ich bin Softwareentwickler und Researcher. Aktuell arbeite ich als Wissenschaflticher Mitarbeiter and der Technischen Hochschule Augsburg am Institut für agile Softwareentwicklung (',
             },
-            { text: 'neuland21 e.V.', link: 'https://neuland21.de' },
-            { text: ' und nebenberuflich als Freelancer.' },
+            { text: 'THA_ias', link: 'https://www.tha.de/Informatik/THA-ias/Institut.html' },
+            { text: ' , ' },
+            { text: 'THA_innolab', link: 'https://www.tha.de/Informatik/THA-ias/THA-innolab.html' },
+            { text: ') und nebenberuflich als Freelancer.' },
         ],
         [
             { text: 'Ich freue mich immer über Austausch und Vernetzung – z.B. via ' },
