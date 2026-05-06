@@ -79,6 +79,16 @@ const content = {
     projects: [
         {
             symbols: ['circle', 'square', 'triangle'],
+            company: [{ text: '2026 | ' }, { text: 'TH Augsburg', link: 'https://tha.de' }],
+            description: [
+                { text: 'SMILe', link: 'https://www.tha.de/Informatik/THA-ias/innolab/Projekt-SMILe.html' },
+                {
+                    text: ' – Entwicklung und Erprobung eines integrierten Versorgungsmodells im Verlauf der allogenen hämatopoetischen Stammzelltransplantation unter Einsatz von eHealth',
+                },
+            ],
+        },
+        {
+            symbols: ['circle', 'square', 'triangle'],
             company: [{ text: '2025 | ' }, { text: 'neuland21 e.V.', link: 'https://neuland21.de' }],
             description: [
                 { text: 'REINVENT', link: 'https://neuland21.de/projekte/reinvent' },
@@ -89,8 +99,11 @@ const content = {
             symbols: ['circle'],
             company: [{ text: '2025 | ' }, { text: 'TH Augsburg', link: 'https://tha.de' }],
             description: [
-                { text: 'STANDORT', link: 'https://www.springerprofessional.de/standort/5054282' },
-                { text: '-Submission zu „KI-Methoden in der Stadtentwicklung“' },
+                { text: 'STANDORT' },
+                {
+                    text: ' – Urbane Digitale Zwillinge: Anwendungsperspektiven für die Stadtentwicklung durch die KI-gestützte Digitalisierung von Bauleitplänen',
+                    link: 'https://link.springer.com/article/10.1007/s00548-026-01033-8',
+                },
             ],
         },
         {

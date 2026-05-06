@@ -66,7 +66,7 @@ const content = {
             title: 'Wissenschaftliche Mitarbeit',
             description: [
                 {
-                    text: 'Praktische Handreichungen, politische  Paper und Fachartikel zu aktuellen Themen wie Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert.',
+                    text: 'Themenbereich: eHealth, mHealth, Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert.',
                 },
             ],
             style: 'sans' as const,
@@ -76,7 +76,7 @@ const content = {
             title: 'Datenverarbeitung',
             description: [
                 {
-                    text: 'Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Data-Cleaning, Visualisierung, Analyse, Machine Learning, Regression und Klassifizierung. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular einzubetten.',
+                    text: 'Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Datenaufbereitung, Datenanalyse, Datenvisualisierung, Machine- & Deep Learning. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular in Softwareprojekte einzubetten.',
                 },
             ],
             style: 'mono' as const,
