@@ -59,14 +59,14 @@ const content = {
             { text: 'E-Mail', link: 'mailto:schwarz.michael@posteo.net' },
             { text: '. #gernperDu', styles: 'italic' },
         ],
-        [{ text: 'Meine Leistungen im Überblick: ' }], //, { text: '(74€/h brutto)', styles: 'text-stone-400' }],
+        [{ text: 'Meine Leistungen im Überblick: ' }], //, { text: '(70€/h (E10) - 90€/h (E13) brutto)', styles: 'text-stone-400' }],
     ],
     services: [
         {
             title: 'Wissenschaftliche Mitarbeit',
             description: [
                 {
-                    text: 'Themenbereich: eHealth, mHealth, Civic Tech, Smart Cities & Regions, künstliche Intelligenz und Open Source – qualitativ und nutzer:innenzentriert.',
+                    text: 'Informatik mit Schwerpunkten Data Science und Agile Softwareentwicklung in den Domänen eHealth, mHealth, Civic Tech, Smart City & Regions sowie Open Source. Tätig in qualitativer und quantitativer Forschung.',
                 },
             ],
             style: 'sans' as const,
@@ -76,7 +76,7 @@ const content = {
             title: 'Datenverarbeitung',
             description: [
                 {
-                    text: 'Zum Einsatz kommt alles was das Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Datenaufbereitung, Datenanalyse, Datenvisualisierung, Machine- & Deep Learning. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular in Softwareprojekte einzubetten.',
+                    text: 'Zum Einsatz kommt alles was das R & Python Ökosystem zu bieten hat; z.B. für Web-Scraping, Datenaufbereitung, Datenanalyse, Datenvisualisierung, Machine- & Deep Learning. Python bietet zudem die Möglichkeit den Quellcode zu erweitern und modular in Softwareprojekte einzubetten.',
                 },
             ],
             style: 'mono' as const,
